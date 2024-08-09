@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "booking host time service",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm ./build/app.js",
     "test": "jest"
   },
   "author": "",
@@ -19,6 +21,7 @@
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.10.4",
     "sqlite3": "^5.1.7",
+    "ts-node": "^10.9.2",
     "typedi": "^0.10.0",
     "yup": "^1.4.0"
   },
