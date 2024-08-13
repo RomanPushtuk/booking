@@ -28,8 +28,7 @@ export class ClientService {
   }
   async createClient(data: CreateClientDTO): Promise<{ id: string }> {
     const client = Client.fromDTO(data);
-    const { value } = await this._clientReposotory.save(client);
-    return { id: value };
+    return await this._clientReposotory.save(client);
   }
   public async getBookings(
     sorting: BookingSorting,

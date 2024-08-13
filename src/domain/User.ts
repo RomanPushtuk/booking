@@ -5,6 +5,13 @@ import { Password } from "../valueObjects/Password";
 import { Id } from "../valueObjects/Id";
 import { Role } from "../valueObjects/Role";
 
+interface IUserProperties {
+  id: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 export class User {
   readonly id: Id;
   readonly email: Email;
@@ -24,5 +31,14 @@ export class User {
     const password = new Password(data.password);
     const role = new Role(data.role);
     return new User(id, email, password, role);
+  }
+
+  public getProperties(): IUserProperties {
+    return {
+      id: this.id.value,
+      email: this.email.value,
+      password: this.password.value,
+      role: this.role.value,
+    };
   }
 }

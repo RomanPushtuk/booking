@@ -1,12 +1,13 @@
 import "reflect-metadata";
 import { createExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
+import * as knex from "knex";
 import { db } from "./db";
 
 // its important to set container before any operation you do with routing-controllers,
 // including importing controllers
 useContainer(Container);
-Container.set("db", db);
+Container.set<knex.Knex>("db", db);
 
 import { ClientController } from "./src/controllers/ClientController";
 import { HostController } from "./src/controllers/HostController";
@@ -40,8 +41,11 @@ const app = createExpressServer({
     // the user from the database every time, but to store it in the local Map
     return userRepository.findOneByToken(token);
   },
+  classTransformer: false,
   controllers: [ClientController, HostController, AuthController],
 });
 
 // run express application on port 3000
-app.listen(3000);
+app.listen(3000, () => {
+  console.log("backend started on 3000 port");
+});

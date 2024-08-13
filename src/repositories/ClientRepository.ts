@@ -17,9 +17,9 @@ export class ClientRepository {
     const clientDto = new ClientDTO(data);
     return Client.fromDTO(clientDto);
   }
-  async save(client: Client): Promise<Id> {
-    const clientDTO = client.getProperties();
-    await this._db("users").insert(clientDTO).onConflict("id").merge();
-    return client.id;
+  async save(client: Client): Promise<{ id: string }> {
+    const clientProperties = client.getProperties();
+    await this._db("clients").insert(clientProperties);
+    return { id: clientProperties.id };
   }
 }

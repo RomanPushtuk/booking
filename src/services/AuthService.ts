@@ -21,7 +21,7 @@ export class AuthService {
     await this.userRepository.save(user);
 
     if (user.role.value === Roles.CLIENT) {
-      const createClientDto = new CreateClientDTO({ id: user.id });
+      const createClientDto = new CreateClientDTO({ id: user.id.value });
       return this.clientService.createClient(createClientDto);
     }
 

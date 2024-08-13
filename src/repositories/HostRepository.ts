@@ -1,13 +1,14 @@
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import * as knex from "knex";
 import { Host } from "../domain/Host";
 import { Id } from "../valueObjects/Id";
 import { BookingRepository } from "./BookingRepository";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
 
+@Service()
 export class HostRepository {
   constructor(
-    @Inject() private _db: knex.Knex,
+    @Inject("db") private _db: knex.Knex,
     @Inject() private _bookingRepository: BookingRepository,
   ) {}
 

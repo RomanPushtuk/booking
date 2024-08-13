@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import * as knex from "knex";
 import { Booking } from "../domain/Booking";
 import { BookingSorting } from "../types/BookingSorting";
@@ -6,8 +6,9 @@ import { BookingFilters } from "../types/BookingFilters";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { Id } from "../valueObjects/Id";
 
+@Service()
 export class BookingRepository {
-  constructor(@Inject() private _db: knex.Knex) {}
+  constructor(@Inject("db") private _db: knex.Knex) {}
 
   public async getById(id: string): Promise<Booking> {
     throw new Error("Not implemented");

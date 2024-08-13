@@ -1,6 +1,10 @@
 import { ClientDTO } from "../dtos/ClientDTO";
 import { Id } from "../valueObjects/Id";
 
+interface IClientProperties {
+  id: string;
+}
+
 export class Client {
   readonly id: Id;
 
@@ -13,7 +17,9 @@ export class Client {
     return new Client(id);
   }
 
-  public getProperties(): ClientDTO {
-    return new ClientDTO(this);
+  public getProperties(): IClientProperties {
+    return {
+      id: this.id.value,
+    };
   }
 }
