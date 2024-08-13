@@ -1,4 +1,4 @@
-import { createBookingDTOSchema } from "../validationSchemas/CreateBookingDTOSchema";
+import { createBookingDTOSchema } from "../validationSchemas/createBookingDTOSchema";
 
 export class CreateBookingDTO {
   clientId: string;

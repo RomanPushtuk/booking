@@ -59,6 +59,14 @@ export class Host extends AggregateRoot {
     return new HostDTO(data);
   }
 
+  setUpcomingBookings(upcomingBookings: Booking[]) {
+    throw new Error("Not implemented");
+  }
+
+  getUpcomingBookings(): Array<Booking> {
+    throw new Error("Not implemented");
+  }
+
   private checkIfExistOverlapingBooking = (
     booking: Booking,
     bookings: Array<Booking>,

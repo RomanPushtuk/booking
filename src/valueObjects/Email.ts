@@ -8,7 +8,7 @@ export class Email {
       Email.validate(this.value);
     } catch (err) {
       console.log(err);
-      throw new EmailValidationError();
+      throw new Error();
     }
   }
 

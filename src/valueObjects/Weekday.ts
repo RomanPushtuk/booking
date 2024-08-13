@@ -8,8 +8,8 @@ export class Weekday implements IValueObject {
     try {
       Weekday.validate(this);
     } catch (err) {
-      console.log(err)
-      throw new WeekdayValidationError();
+      console.log(err);
+      throw new Error();
     }
   }
 

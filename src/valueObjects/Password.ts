@@ -9,7 +9,7 @@ export class Password {
       Password.validate(this.value);
     } catch (err) {
       console.log(err);
-      throw new PasswordValidationError();
+      throw new Error();
     }
   }
 

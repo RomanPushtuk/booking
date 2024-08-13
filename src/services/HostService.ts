@@ -9,9 +9,25 @@ import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingSorting } from "../types/BookingSorting";
 import { BookingFilters } from "../types/BookingFilters";
 import { BookingDTO } from "../dtos/BookingDTO";
+import { HostDTO } from "../dtos/HostDTO";
+import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 
 @Service()
 export class HostService {
+  getHost(id: string): Promise<HostDTO> {
+    throw new Error("Method not implemented.");
+  }
+
+  updateHost(
+    id: string,
+    updateHostDTO: UpdateHostDTO,
+  ): Promise<{ id: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  deleteHost(id: string): Promise<{ id: string }> {
+    throw new Error("Method not implemented.");
+  }
   constructor(
     @Inject() private _hostRepository: HostRepository,
     @Inject() private _bookingRepository: BookingRepository,

@@ -1,8 +1,8 @@
-import { AuthRoles } from "../enums/Roles";
+import { Roles } from "../enums/Roles";
 
 export class UserDTO {
   id: string;
-  role: AuthRoles;
+  role: Roles;
   constructor(data: any) {
     this.id = data.id;
     this.role = data.role;

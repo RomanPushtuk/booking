@@ -1,12 +1,12 @@
 import { Inject, Service } from "typedi";
-import { Knex } from "knex";
+import * as knex from "knex";
 import { Client } from "../domain/Client";
 import { Id } from "../valueObjects/Id";
 import { ClientDTO } from "../dtos/ClientDTO";
 
 @Service()
 export class ClientRepository {
-  constructor(@Inject("db") private _db: Knex) {}
+  constructor(@Inject("db") private _db: knex.Knex) {}
 
   async deleteById(id: string): Promise<Id> {
     await this._db("users").where("id", id).delete();

@@ -16,6 +16,8 @@ import { HostService } from "../services/HostService";
 import { BookingSorting } from "../types/BookingSorting";
 import { BookingFilters } from "../types/BookingFilters";
 import { BookingDTO } from "../dtos/BookingDTO";
+import { HostDTO } from "../dtos/HostDTO";
+import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 
 @Controller("/hosts")
 export class HostController {
