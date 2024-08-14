@@ -8,7 +8,7 @@ import { Id } from "../valueObjects/Id";
 
 @Service()
 export class BookingRepository {
-  constructor(@Inject("db") private _db: knex.Knex) {}
+  constructor(private _db: knex.Knex) {}
 
   public async getById(id: string): Promise<Booking> {
     throw new Error("Not implemented");
@@ -26,7 +26,16 @@ export class BookingRepository {
     return bookingDTOs.map((booking) => Booking.fromDTO(booking));
   }
 
-  public async saveAll(bookings: Array<Booking>): Promise<Id[]> {
-    throw new Error("Not implemented");
+  public async saveAll(bookings: Array<Booking>): Promise<string[]> {
+    const bookingProperties = bookings.map((booking) =>
+      booking.getProperties(),
+    );
+    if (bookingProperties.length === 0) return [];
+
+    await this._db("bookings")
+      .insert(bookingProperties)
+      .onConflict("id")
+      .merge();
+    return bookingProperties.map(({ id }) => id);
   }
 }

@@ -7,10 +7,18 @@ import { nanoid } from "nanoid";
 import { Date } from "../valueObjects/Date";
 import { HoursMinutes } from "../valueObjects/HoursMinutes";
 
-export class Booking {
-  readonly id: Id;
+interface IBookingProperties {
+  id: string;
   clientId: string;
   hostId: string;
+  date: string;
+  time: { from: string; to: string };
+}
+
+export class Booking {
+  readonly id: Id;
+  clientId: Id;
+  hostId: Id;
   date: Date;
   time: WorkPeriod;
 
@@ -21,8 +29,8 @@ export class Booking {
 
   private constructor(
     id: Id,
-    clientId: string,
-    hostId: string,
+    clientId: Id,
+    hostId: Id,
     date: Date,
     time: WorkPeriod,
     canceled: boolean,
@@ -60,8 +68,8 @@ export class Booking {
 
   static fromDTO(data: BookingDTO): Booking {
     const id = new Id(nanoid(8));
-    const clientId = data.clientId;
-    const hostId = data.hostId;
+    const clientId = new Id(data.clientId);
+    const hostId = new Id(data.hostId);
     const date = new Date(data.date);
     const time = new WorkPeriod(
       new HoursMinutes(data.time.from),
@@ -73,8 +81,16 @@ export class Booking {
     return new Booking(id, clientId, hostId, date, time, canceled, deleted);
   }
 
-  public getProperties(): BookingDTO {
-    throw new Error("Method not implemented.");
+  public getProperties(): IBookingProperties {
+    const time = this.time;
+
+    return {
+      id: this.id.value,
+      clientId: this.clientId.value,
+      hostId: this.hostId.value,
+      date: this.date.value,
+      time: { from: time.from.value, to: time.to.value },
+    };
   }
 
   public update(data: UpdateBookingDTO) {

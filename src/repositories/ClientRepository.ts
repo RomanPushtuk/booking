@@ -6,7 +6,7 @@ import { ClientDTO } from "../dtos/ClientDTO";
 
 @Service()
 export class ClientRepository {
-  constructor(@Inject("db") private _db: knex.Knex) {}
+  constructor(private _db: knex.Knex) {}
 
   async deleteById(id: string): Promise<Id> {
     await this._db("users").where("id", id).delete();
@@ -19,7 +19,7 @@ export class ClientRepository {
   }
   async save(client: Client): Promise<{ id: string }> {
     const clientProperties = client.getProperties();
-    await this._db("clients").insert(clientProperties);
+    await this._db("clients").insert(clientProperties).onConflict("id").merge();
     return { id: clientProperties.id };
   }
 }

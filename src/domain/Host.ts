@@ -1,6 +1,5 @@
 import moment from "moment";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
-import { HostDTO } from "../dtos/HostDTO";
 import { BookingCanceledByClientEvent } from "../events/BookingCanceledByClientEvent";
 import { BookingCanceledByHostEvent } from "../events/BookingCanceledByHostEvent";
 import { BookingCreatedEvent } from "../events/BookingCreatedEvent";
@@ -13,6 +12,13 @@ import { WorkPeriod } from "../valueObjects/WorkPeriod";
 import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
+
+interface IHostProperties {
+  id: string;
+  forwardBooking: string;
+  workHours: Array<{ from: string; to: string }>;
+  workDays: Array<string>;
+}
 
 export class Host extends AggregateRoot {
   readonly id: Id;
@@ -49,14 +55,16 @@ export class Host extends AggregateRoot {
     return new Host(id, upcomingBookings, forwardBooking, workHours, workDays);
   }
 
-  public getProperties(): HostDTO {
-    const data = {
+  public getProperties(): IHostProperties {
+    return {
       id: this.id.value,
       forwardBooking: this.forwardBooking.value,
-      workHours: this.workHours.map((item) => ({ ...item })),
+      workHours: this.workHours.map(({ from, to }) => ({
+        from: from.value,
+        to: to.value,
+      })),
       workDays: this.workDays.map((item) => item.value),
     };
-    return new HostDTO(data);
   }
 
   setUpcomingBookings(upcomingBookings: Booking[]) {
@@ -64,7 +72,7 @@ export class Host extends AggregateRoot {
   }
 
   getUpcomingBookings(): Array<Booking> {
-    throw new Error("Not implemented");
+    return this.upcomingBookings;
   }
 
   private checkIfExistOverlapingBooking = (
@@ -113,7 +121,7 @@ export class Host extends AggregateRoot {
     }
 
     this.upcomingBookings.push(booking);
-    this.dispatch(new BookingCreatedEvent(booking.clientId));
+    this.dispatch(new BookingCreatedEvent(booking.clientId.value));
   }
 
   public updateBooking(booking: Booking, data: UpdateBookingDTO) {
@@ -131,7 +139,7 @@ export class Host extends AggregateRoot {
       throw new Error("Host has booking on this date and time");
     }
 
-    this.dispatch(new BookingUpdatedEvent(booking.clientId));
+    this.dispatch(new BookingUpdatedEvent(booking.clientId.value));
   }
 
   public cancelBookingByClient(booking: Booking, clientId: string) {
@@ -139,7 +147,7 @@ export class Host extends AggregateRoot {
       throw new Error("The host does not have this upcoming booking");
     }
 
-    if (booking.clientId !== clientId) {
+    if (booking.clientId.value !== clientId) {
       throw new Error("This booking cannot be cancelled by this client");
     }
 
@@ -158,7 +166,7 @@ export class Host extends AggregateRoot {
       throw new Error("The host does not have this upcoming booking");
     }
 
-    if (booking.hostId !== hostId) {
+    if (booking.hostId.value !== hostId) {
       throw new Error("This booking cannot be cancelled by this host");
     }
 

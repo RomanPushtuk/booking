@@ -6,7 +6,7 @@ import * as knex from "knex";
 
 @Service()
 export class UserRepository {
-  constructor(@Inject("db") private _db: knex.Knex) {}
+  constructor(private _db: knex.Knex) {}
 
   findOneByToken(token: string): UserDTO | null {
     throw new Error("Method not implemented");

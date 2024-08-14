@@ -8,8 +8,8 @@ import { CreateHostDTO } from "../dtos/CreateHostDTO";
 @Service()
 export class HostRepository {
   constructor(
-    @Inject("db") private _db: knex.Knex,
-    @Inject() private _bookingRepository: BookingRepository,
+    private _db: knex.Knex,
+    private _bookingRepository: BookingRepository,
   ) {}
 
   public async getById(id: string): Promise<Host> {
@@ -24,13 +24,22 @@ export class HostRepository {
     return host;
   }
 
-  public async save(host: Host): Promise<Id> {
-    const hostDTO = host.getProperties();
+  public async save(host: Host): Promise<{ id: string }> {
+    const hostProperties = host.getProperties();
+
     const upcomingBookings = host.getUpcomingBookings();
 
-    await this._db("host").update({});
-    this._bookingRepository.saveAll(upcomingBookings);
+    await this._db("hosts")
+      .insert({
+        ...hostProperties,
+        workHours: JSON.stringify(hostProperties.workHours),
+        workDays: JSON.stringify(hostProperties.workDays),
+      })
+      .onConflict("id")
+      .merge();
 
-    return host.id;
+    await this._bookingRepository.saveAll(upcomingBookings);
+
+    return { id: hostProperties.id };
   }
 }

@@ -35,8 +35,7 @@ export class HostService {
 
   public async createHost(data: CreateHostDTO): Promise<{ id: string }> {
     const host = Host.fromDTO(data);
-    const id = await this._hostRepository.save(host);
-    return { id: id.value };
+    return await this._hostRepository.save(host);
   }
 
   public async getBookings(
@@ -44,7 +43,7 @@ export class HostService {
     filters: BookingFilters,
   ): Promise<Array<BookingDTO>> {
     const bookings = await this._bookingRepository.getAll(sorting, filters);
-    return bookings.map((booking) => booking.getProperties());
+    return [];
   }
 
   public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
@@ -63,7 +62,7 @@ export class HostService {
 
   public async updateBooking(data: UpdateBookingDTO): Promise<{ id: string }> {
     const booking = await this._bookingRepository.getById(data.id);
-    const host = await this._hostRepository.getById(booking.hostId);
+    const host = await this._hostRepository.getById(booking.hostId.value);
     host.updateBooking(booking, data);
     await this._hostRepository.save(host);
     return { id: booking.id.value };
@@ -74,7 +73,7 @@ export class HostService {
     clientId: string,
   ): Promise<{ id: string }> {
     const booking = await this._bookingRepository.getById(bookingId);
-    const host = await this._hostRepository.getById(booking.hostId);
+    const host = await this._hostRepository.getById(booking.hostId.value);
     host.cancelBookingByClient(booking, clientId);
     this._hostRepository.save(host);
     return { id: bookingId };
@@ -85,7 +84,7 @@ export class HostService {
     hostId: string,
   ): Promise<{ id: string }> {
     const booking = await this._bookingRepository.getById(bookingId);
-    const host = await this._hostRepository.getById(booking.hostId);
+    const host = await this._hostRepository.getById(booking.hostId.value);
     host.cancelBookingByHost(booking, hostId);
     this._hostRepository.save(host);
     return { id: bookingId };

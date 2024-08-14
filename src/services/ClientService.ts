@@ -30,12 +30,13 @@ export class ClientService {
     const client = Client.fromDTO(data);
     return await this._clientReposotory.save(client);
   }
+
   public async getBookings(
     sorting: BookingSorting,
     filters: BookingFilters,
   ): Promise<Array<BookingDTO>> {
     const bookings = await this._bookingRepository.getAll(sorting, filters);
-    return bookings.map((booking) => booking.getProperties());
+    return [];
   }
   public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
     return this._hostService.createBooking(data);
