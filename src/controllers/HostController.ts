@@ -8,8 +8,9 @@ import {
   Authorized,
   CurrentUser,
   QueryParam,
+  JsonController,
 } from "routing-controllers";
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { Roles } from "../enums/Roles";
 import { User } from "../domain/User";
 import { HostService } from "../services/HostService";
@@ -19,9 +20,15 @@ import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
 import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 
-@Controller("/hosts")
+@JsonController("/hosts")
+@Service()
 export class HostController {
   constructor(@Inject() private _hostService: HostService) {}
+
+  @Get()
+  async getHosts(): Promise<HostDTO[]> {
+    return await this._hostService.getHosts();
+  }
 
   @Get("/:id")
   async getHost(@Param("id") id: string): Promise<HostDTO> {

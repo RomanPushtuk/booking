@@ -12,6 +12,7 @@ import { WorkPeriod } from "../valueObjects/WorkPeriod";
 import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
+import { HostDTO } from "../dtos/HostDTO";
 
 interface IHostProperties {
   id: string;

@@ -9,11 +9,9 @@ import { BookingRepository } from "../repositories/BookingRepository";
 @Service()
 export class UnitOfWorkService {
   private trx: knex.Knex.Transaction<any, any[]> | null;
-  private resolve: (() => void) | null;
 
   constructor() {
     this.trx = null;
-    this.resolve = null;
   }
 
   public makeTransactional<T>(cb: () => T): Promise<T> {
@@ -26,33 +24,20 @@ export class UnitOfWorkService {
     });
   }
 
-  public async begin(): Promise<void> {
-    return new Promise((resolve) => {
-      db.transaction(async (trx) => {
-        this.trx = trx;
-        this.resolve = resolve;
-      });
-    });
-  }
-
   get userRepository(): UserRepository {
-    if (!this.trx) throw new Error("");
-    return new UserRepository(this.trx);
+    return new UserRepository(this.trx || db);
   }
 
   get clientRepository(): ClientRepository {
-    if (!this.trx) throw new Error("");
-    return new ClientRepository(this.trx);
+    return new ClientRepository(this.trx || db);
   }
 
   get bookingRepository(): BookingRepository {
-    if (!this.trx) throw new Error("");
-    return new BookingRepository(this.trx);
+    return new BookingRepository(this.trx || db);
   }
 
   get hostRepository(): HostRepository {
-    if (!this.trx) throw new Error("");
     const bookingRepository = this.bookingRepository;
-    return new HostRepository(this.trx, bookingRepository);
+    return new HostRepository(this.trx || db, bookingRepository);
   }
 }
