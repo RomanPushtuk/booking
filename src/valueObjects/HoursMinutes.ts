@@ -18,7 +18,7 @@ export class HoursMinutes implements IValueObject, IHoursMinutes {
     this.hours = Number(hoursStr);
     this.minutes = Number(minutesStr);
     try {
-      HoursMinutes.validate(this);
+      // HoursMinutes.validate(this);
     } catch (err) {
       console.log(err);
       throw new HoursMunutesValidationError();

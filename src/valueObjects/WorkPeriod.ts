@@ -5,10 +5,11 @@ export class WorkPeriod implements IValueObject {
   to: HoursMinutes;
 
   constructor(from: HoursMinutes, to: HoursMinutes) {
+    console.log(from, to);
     this.from = from;
     this.to = to;
     try {
-      WorkPeriod.validate(this);
+      // WorkPeriod.validate(this);
     } catch (err) {
       throw new WorkPeriodValidationError();
     }

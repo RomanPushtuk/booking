@@ -9,6 +9,4 @@ export const bookingDtoSchema = yup.object().shape({
     from: yup.string().required(),
     to: yup.string().required(),
   }),
-  canceled: yup.boolean().required(),
-  deleted: yup.boolean().required(),
 });

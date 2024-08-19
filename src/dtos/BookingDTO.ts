@@ -6,8 +6,6 @@ export class BookingDTO {
   hostId: string;
   date: string;
   time: { from: string; to: string };
-  canceled: boolean;
-  deleted: boolean;
 
   constructor(data: any) {
     this.id = data.id;
@@ -15,8 +13,6 @@ export class BookingDTO {
     this.hostId = data.hostId;
     this.date = data.date;
     this.time = data.time;
-    this.canceled = data.canceled;
-    this.deleted = data.deleted;
 
     try {
       bookingDtoSchema.validateSync(this);

@@ -27,10 +27,14 @@ export class HostRepository {
   }
 
   public async getById(id: string): Promise<Host> {
-    const hostData = await this._db("host").where({ id });
+    const hostData = await this._db("hosts").where({ id }).first();
     const upcomingBookings = await this._bookingRepository.getAll();
 
-    const createHostDTO = new CreateHostDTO(hostData);
+    const createHostDTO = new CreateHostDTO({
+      ...hostData,
+      workHours: JSON.parse(hostData.workHours),
+      workDays: JSON.parse(hostData.workDays),
+    });
     const host = Host.fromDTO(createHostDTO);
 
     host.setUpcomingBookings(upcomingBookings);

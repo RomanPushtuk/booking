@@ -1,10 +1,9 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import * as knex from "knex";
 import { Booking } from "../domain/Booking";
-import { BookingSorting } from "../types/BookingSorting";
-import { BookingFilters } from "../types/BookingFilters";
 import { BookingDTO } from "../dtos/BookingDTO";
-import { Id } from "../valueObjects/Id";
+import { BookingSorting } from "../valueObjects/BookingSorting";
+import { BookingFilters } from "../valueObjects/BookingFilters";
 
 @Service()
 export class BookingRepository {
@@ -18,18 +17,27 @@ export class BookingRepository {
     sorting?: BookingSorting,
     filters?: BookingFilters,
   ): Promise<Array<Booking>> {
-    const bookings: Array<any> = await this._db("booking").where({
-      sorting,
-      filters,
-    });
-    const bookingDTOs = bookings.map((booking) => new BookingDTO(booking));
+    const bookings: Array<any> = await this._db("bookings").select("*");
+    console.log("bookings");
+    console.log(bookings);
+    const bookingDTOs = bookings.map(
+      (booking) =>
+        new BookingDTO({
+          ...booking,
+          time: JSON.parse(booking.time),
+        }),
+    );
     return bookingDTOs.map((booking) => Booking.fromDTO(booking));
   }
 
   public async saveAll(bookings: Array<Booking>): Promise<string[]> {
-    const bookingProperties = bookings.map((booking) =>
-      booking.getProperties(),
-    );
+    const bookingProperties = bookings.map((booking) => {
+      const props = booking.getProperties();
+      return {
+        ...props,
+        time: JSON.stringify(props.time),
+      };
+    });
     if (bookingProperties.length === 0) return [];
 
     await this._db("bookings")

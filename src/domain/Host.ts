@@ -23,7 +23,7 @@ interface IHostProperties {
 
 export class Host extends AggregateRoot {
   readonly id: Id;
-  readonly upcomingBookings: Array<Booking>;
+  upcomingBookings: Array<Booking>;
   readonly forwardBooking: ForwardBooking;
   readonly workHours: Array<WorkPeriod>;
   readonly workDays: Array<Weekday>;
@@ -69,7 +69,7 @@ export class Host extends AggregateRoot {
   }
 
   setUpcomingBookings(upcomingBookings: Booking[]) {
-    throw new Error("Not implemented");
+    this.upcomingBookings = upcomingBookings;
   }
 
   getUpcomingBookings(): Array<Booking> {
@@ -100,7 +100,7 @@ export class Host extends AggregateRoot {
   private checkIfBookingInThePast = (booking: Booking): boolean => {
     const now = moment();
     const bookingDateTimePeriod = booking.getDateTimePeriod();
-    if (bookingDateTimePeriod.from.diff(now, "minutes") < 0) return true;
+    if (bookingDateTimePeriod.from.diff(now, "minutes") > 0) return true;
     return false;
   };
 

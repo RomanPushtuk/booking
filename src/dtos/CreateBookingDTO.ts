@@ -10,7 +10,7 @@ export class CreateBookingDTO {
     this.clientId = data.clientId;
     this.hostId = data.hostId;
     this.date = data.date;
-    this.time = data.timePeriod;
+    this.time = data.time;
 
     try {
       createBookingDTOSchema.validateSync(this);

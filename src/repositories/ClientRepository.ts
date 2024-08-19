@@ -13,7 +13,7 @@ export class ClientRepository {
     return new Id(id);
   }
   async getById(id: string): Promise<Client> {
-    const data = await this._db("users").where("id", id).first();
+    const data = await this._db("clients").where("id", id).first();
     const clientDto = new ClientDTO(data);
     return Client.fromDTO(clientDto);
   }

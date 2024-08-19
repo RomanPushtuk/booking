@@ -6,6 +6,7 @@ import { Id } from "../valueObjects/Id";
 import { nanoid } from "nanoid";
 import { Date } from "../valueObjects/Date";
 import { HoursMinutes } from "../valueObjects/HoursMinutes";
+import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 
 interface IBookingProperties {
   id: string;
@@ -66,8 +67,8 @@ export class Booking {
     return { from: fromDateTime, to: toDateTime };
   }
 
-  static fromDTO(data: BookingDTO): Booking {
-    const id = new Id(nanoid(8));
+  static fromDTO(data: BookingDTO | CreateBookingDTO): Booking {
+    const id = new Id(data.id ?? nanoid(8));
     const clientId = new Id(data.clientId);
     const hostId = new Id(data.hostId);
     const date = new Date(data.date);
