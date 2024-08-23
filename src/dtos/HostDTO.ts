@@ -1,3 +1,5 @@
+import { hostDtoSchema } from "../validationSchemas/hostDtoSchema";
+
 export class HostDTO {
   id: string;
   forwardBooking: string;
@@ -9,5 +11,11 @@ export class HostDTO {
     this.forwardBooking = data.forwardBooking;
     this.workHours = data.workHours;
     this.workDays = data.workDays;
+    try {
+      hostDtoSchema.validateSync(this);
+    } catch (err) {
+      console.log(err);
+      throw new Error("CreateHostDTO validation error");
+    }
   }
 }
