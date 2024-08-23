@@ -1,12 +1,11 @@
 import { ForwardBookingPeriods } from "../../src/enums/ForwardBookingPeriods";
-import { CreateHostDTO } from "../../src/dtos/CreateHostDTO";
+import { HostDTO } from "../../src/dtos/HostDTO";
 
-describe("CreateHostDTO", () => {
-  test("Valid createHostDto should not throw an Error", () => {
+describe("hostDto", () => {
+  test("Valid hostDto should not throw an Error", () => {
     const validData = {
       id: "123",
       forwardBooking: {
-        //TODO field type in schema is not equal to HostDTO
         count: 5,
         days: String(ForwardBookingPeriods.day),
       },
@@ -17,10 +16,10 @@ describe("CreateHostDTO", () => {
       workDays: ["Monday", "Tuesday", "Wednesday"],
     };
 
-    expect(() => new CreateHostDTO(validData)).not.toThrow();
+    expect(() => new HostDTO(validData)).not.toThrow();
   });
 
-  test("Invalid createHostDto should throw an Error", () => {
-    expect(() => new CreateHostDTO({})).toThrow();
+  test("Invalid hostDto should throw an Error", () => {
+    expect(() => new HostDTO({})).toThrow();
   });
 });

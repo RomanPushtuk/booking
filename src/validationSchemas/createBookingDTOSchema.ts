@@ -1,4 +1,4 @@
-import yup from "yup";
+import * as yup from "yup";
 
 export const createBookingDTOSchema = yup.object().shape({
   clientId: yup.string().required(),

@@ -1,4 +1,5 @@
 import { bookingDtoSchema } from "../validationSchemas/bookingDtoSchema";
+import { BookingDTOValidationError } from "../errors/BookingDTOValidationError";
 
 export class BookingDTO {
   id: string;
@@ -18,7 +19,7 @@ export class BookingDTO {
       bookingDtoSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("BookingDTO validation error");
+      throw new BookingDTOValidationError();
     }
   }
 }

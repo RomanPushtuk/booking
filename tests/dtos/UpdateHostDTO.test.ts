@@ -1,8 +1,8 @@
 import { ForwardBookingPeriods } from "../../src/enums/ForwardBookingPeriods";
-import { CreateHostDTO } from "../../src/dtos/CreateHostDTO";
+import { UpdateHostDTO } from "../../src/dtos/UpdateHostDTO";
 
-describe("CreateHostDTO", () => {
-  test("Valid createHostDto should not throw an Error", () => {
+describe("updateHostDTO", () => {
+  test("Valid updateHostDto should not throw an Error", () => {
     const validData = {
       id: "123",
       forwardBooking: {
@@ -17,10 +17,10 @@ describe("CreateHostDTO", () => {
       workDays: ["Monday", "Tuesday", "Wednesday"],
     };
 
-    expect(() => new CreateHostDTO(validData)).not.toThrow();
+    expect(() => new UpdateHostDTO(validData)).not.toThrow();
   });
 
-  test("Invalid createHostDto should throw an Error", () => {
-    expect(() => new CreateHostDTO({})).toThrow();
+  test("Invalid updateHostDto should throw an Error", () => {
+    expect(() => new UpdateHostDTO({})).toThrow();
   });
 });

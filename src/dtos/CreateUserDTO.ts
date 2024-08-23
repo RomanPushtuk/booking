@@ -1,4 +1,5 @@
 import { createUserDtoSchema } from "../validationSchemas/createUserDtoSchema";
+import { CreateUserDTOValidationError } from "../errors/CreateUserDTOValidationError";
 
 export class CreateUserDTO {
   readonly email: string;
@@ -14,7 +15,7 @@ export class CreateUserDTO {
       createUserDtoSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("CreateUserDTO validation error");
+      throw new CreateUserDTOValidationError();
     }
   }
 }
