@@ -17,8 +17,8 @@ import { BookingDTO } from "../dtos/BookingDTO";
 import { ClientDTO } from "../dtos/ClientDTO";
 import { User } from "../domain/User";
 import moment from "moment";
-import { BookingSorting } from "../valueObjects/BookingSorting";
-import { BookingFilters } from "../valueObjects/BookingFilters";
+import { BookingSorting } from "../application/BookingSorting";
+import { BookingFilters } from "../application/BookingFilters";
 
 @JsonController("/clients")
 @Service()

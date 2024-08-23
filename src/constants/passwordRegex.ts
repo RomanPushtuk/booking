@@ -1,0 +1,1 @@
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/; //check if string includes numbers,letters,capital letters

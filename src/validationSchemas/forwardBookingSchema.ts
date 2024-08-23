@@ -1,4 +1,4 @@
-import { object, number, string } from "yup";
+import { number, object, string } from "yup";
 import { ForwardBookingPeriods } from "../enums/ForwardBookingPeriods";
 
 export const forwardBookingSchema = object({

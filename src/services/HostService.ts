@@ -8,8 +8,8 @@ import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
 import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
-import { BookingSorting } from "../valueObjects/BookingSorting";
-import { BookingFilters } from "../valueObjects/BookingFilters";
+import { BookingSorting } from "../application/BookingSorting";
+import { BookingFilters } from "../application/BookingFilters";
 
 @Service()
 export class HostService {

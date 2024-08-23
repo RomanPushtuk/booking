@@ -2,11 +2,12 @@ import { Inject, Service } from "typedi";
 import { Roles } from "../enums/Roles";
 import { CreateUserDTO } from "../dtos/CreateUserDTO";
 import { User } from "../domain/User";
-import { CreateClientDTO } from "../dtos/CreateClientDTO";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
 import { Client } from "../domain/Client";
 import { Host } from "../domain/Host";
+import { HostDTO } from "../dtos/HostDTO";
+import { ClientDTO } from "../dtos/ClientDTO";
 
 @Service()
 export class AuthService {
@@ -19,8 +20,8 @@ export class AuthService {
         await this._unitOfWork.userRepository.save(user);
 
         if (user.role.value === Roles.CLIENT) {
-          const createClientDto = new CreateClientDTO({ id: user.id.value });
-          const client = Client.fromDTO(createClientDto);
+          const clientDto = new ClientDTO({ id: user.id.value });
+          const client = Client.fromDTO(clientDto);
           return await this._unitOfWork.clientRepository.save(client);
         }
 
@@ -35,7 +36,8 @@ export class AuthService {
             forwardBooking: "1 week",
           });
 
-          const host = Host.fromDTO(createHostDto);
+          const hostDto = new HostDTO({ id: user.id.value, ...createHostDto });
+          const host = Host.fromDTO(hostDto);
           return await this._unitOfWork.hostRepository.save(host);
         }
 

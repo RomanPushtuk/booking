@@ -1,5 +1,4 @@
 import moment from "moment";
-import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { BookingCanceledByClientEvent } from "../events/BookingCanceledByClientEvent";
 import { BookingCanceledByHostEvent } from "../events/BookingCanceledByHostEvent";
 import { BookingCreatedEvent } from "../events/BookingCreatedEvent";
@@ -8,7 +7,7 @@ import { ForwardBooking } from "../valueObjects/ForwardBooking";
 import { HoursMinutes } from "../valueObjects/HoursMinutes";
 import { Id } from "../valueObjects/Id";
 import { Weekday } from "../valueObjects/Weekday";
-import { WorkPeriod } from "../valueObjects/WorkPeriod";
+import { WorkPeriod } from "../application/WorkPeriod";
 import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
@@ -43,7 +42,7 @@ export class Host extends AggregateRoot {
     this.workDays = workDays;
   }
 
-  static fromDTO(data: CreateHostDTO): Host {
+  static fromDTO(data: HostDTO): Host {
     const id = new Id(data.id);
     const upcomingBookings: Array<Booking> = [];
     const forwardBooking = new ForwardBooking(data.forwardBooking);

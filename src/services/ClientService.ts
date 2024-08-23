@@ -7,8 +7,8 @@ import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
-import { BookingSorting } from "../valueObjects/BookingSorting";
-import { BookingFilters } from "../valueObjects/BookingFilters";
+import { BookingSorting } from "../application/BookingSorting";
+import { BookingFilters } from "../application/BookingFilters";
 
 @Service()
 export class ClientService {
