@@ -1,5 +1,5 @@
 import * as knex from "knex";
-import { Service, Container } from "typedi";
+import { Service } from "typedi";
 import { db } from "../../db";
 import { UserRepository } from "../repositories/UserRepository";
 import { ClientRepository } from "../repositories/ClientRepository";

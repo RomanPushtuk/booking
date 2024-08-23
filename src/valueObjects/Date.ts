@@ -1,6 +1,9 @@
 import moment from "moment";
 import { DateValidationError } from "../errors/DateValidationError";
 
+//TODO not sure where to move it to
+export type CompareType = "more" | "less" | "equal"
+
 export class Date {
   value: string;
   year: number;
@@ -20,15 +23,12 @@ export class Date {
       Date.validate(this.value);
     } catch (err) {
       console.log(err);
-      throw new Error();
+      throw new DateValidationError();
     }
   }
 
   public static validate(value: string) {
-    //not sure but validation with moment may break DI
-    // cuz we belong on moment implementation
-    // and our incomming data type may get changed if moment api changes?
-    // may i do it we regex?
+
     const m = moment(value, "DD-MM-YYYY");
 
     const year = m.year();
@@ -38,7 +38,19 @@ export class Date {
     if (!year || !month || !day) throw new DateValidationError();
   }
 
-  static equal(d1: Date, d2: Date) {
+  public static compare(date1: Date, date2: Date, type: CompareType = "more"): boolean | number {
+    const m1Date = moment(date1.value, "DD-MM-YYYY");
+    const m2Date = moment(date2.value, "DD-MM-YYYY");
+
+    const diff = m2Date.diff(m1Date);
+
+    if (type === "more") return diff < 0;
+    if (type === "less") return diff > 0;
+    if (type === "equal") return Date.equal(date1, date2);
+    return false;
+  }
+
+  public static equal(d1: Date, d2: Date) {
     return d1.value === d2.value;
   }
 }

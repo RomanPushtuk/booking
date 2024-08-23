@@ -10,10 +10,26 @@ describe("Date Value Object", () => {
   test("Date Value Objects should be equal", () => {
     const validData = "03/12/2024";
 
-    const Date1 = new Date(validData);
-    const Date2 = new Date(validData);
+    const date1 = new Date(validData);
+    const date2 = new Date(validData);
 
-    expect(() => Date.equal(Date1, Date2)).not.toThrow();
+    expect(() => Date.equal(date1, date2)).not.toThrow();
+    expect(() => Date.compare(date1, date2, "equal")).not.toThrow();
+  });
+
+  test("Date1 should be more than Date2", () => {
+
+    const date1 = new Date("04/12/2024");
+    const date2 = new Date("03/12/2024");
+
+    expect(Date.compare(date1, date2)).toBe(true);
+  });
+  test("Date1 should be less than Date2", () => {
+
+    const date1 = new Date("03/12/2024");
+    const date2 = new Date("04/12/2024");
+
+    expect(Date.compare(date1, date2, "less")).toBe(true);
   });
 
   test("Invalid Date Value Object should throw an Error", () => {

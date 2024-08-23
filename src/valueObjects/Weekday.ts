@@ -1,4 +1,5 @@
 import { Days } from "../enums/Days";
+import { WeekdayValidationError } from "../errors/WeekdayValidationError";
 
 export class Weekday implements IValueObject {
   readonly value: string;
@@ -9,11 +10,15 @@ export class Weekday implements IValueObject {
       Weekday.validate(this);
     } catch (err) {
       console.log(err);
-      throw new Error();
+      throw new WeekdayValidationError();
     }
   }
 
+  static equal(weekday1: Weekday, weekday2: Weekday): boolean {
+    return weekday1.value === weekday2.value;
+  }
+
   public static validate(weekday: Weekday) {
-    if (!Object.values<string>(Days).includes(weekday.value)) throw new Error();
+    if (!Object.values<string>(Days).includes(weekday.value)) throw new WeekdayValidationError();
   }
 }
