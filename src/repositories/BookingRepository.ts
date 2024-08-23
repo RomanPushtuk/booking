@@ -2,8 +2,8 @@ import { Service } from "typedi";
 import * as knex from "knex";
 import { Booking } from "../domain/Booking";
 import { BookingDTO } from "../dtos/BookingDTO";
-import { BookingSorting } from "../valueObjects/BookingSorting";
-import { BookingFilters } from "../valueObjects/BookingFilters";
+import { BookingSorting } from "../application/BookingSorting";
+import { BookingFilters } from "../application/BookingFilters";
 
 @Service()
 export class BookingRepository {

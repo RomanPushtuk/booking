@@ -3,13 +3,10 @@ import { Roles } from "../../src/enums/Roles";
 
 describe("Role Value Object", () => {
   test("Valid Role Value Object should not throw an Error", () => {
-
     expect(() => new Role(Roles.HOST)).not.toThrow();
     expect(() => new Role(Roles.CLIENT)).not.toThrow();
-
   });
   test("Roles should be equal", () => {
-
     const role1 = new Role(Roles.HOST);
     const role2 = new Role(Roles.HOST);
 
@@ -19,6 +16,4 @@ describe("Role Value Object", () => {
   test("Invalid Role Value Object should not throw an Error", () => {
     expect(() => new Role("myRole")).toThrow();
   });
-
-
 });

@@ -2,7 +2,7 @@ import moment from "moment";
 import { DateValidationError } from "../errors/DateValidationError";
 
 //TODO not sure where to move it to
-export type CompareType = "more" | "less" | "equal"
+export type CompareType = "more" | "less" | "equal";
 
 export class Date {
   value: string;
@@ -28,7 +28,6 @@ export class Date {
   }
 
   public static validate(value: string) {
-
     const m = moment(value, "DD-MM-YYYY");
 
     const year = m.year();
@@ -38,7 +37,11 @@ export class Date {
     if (!year || !month || !day) throw new DateValidationError();
   }
 
-  public static compare(date1: Date, date2: Date, type: CompareType = "more"): boolean | number {
+  public static compare(
+    date1: Date,
+    date2: Date,
+    type: CompareType = "more",
+  ): boolean | number {
     const m1Date = moment(date1.value, "DD-MM-YYYY");
     const m2Date = moment(date2.value, "DD-MM-YYYY");
 
@@ -46,11 +49,7 @@ export class Date {
 
     if (type === "more") return diff < 0;
     if (type === "less") return diff > 0;
-    if (type === "equal") return Date.equal(date1, date2);
+    if (type === "equal") return date1.value === date2.value;
     return false;
-  }
-
-  public static equal(d1: Date, d2: Date) {
-    return d1.value === d2.value;
   }
 }

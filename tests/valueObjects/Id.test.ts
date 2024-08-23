@@ -24,8 +24,5 @@ describe("Id Value Object", () => {
     const id2 = new Id(validData);
 
     expect(Id.equal(id1, id2)).toBe(true);
-
   });
-
-
 });

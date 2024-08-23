@@ -3,7 +3,7 @@ import { ForwardBookingValidationError } from "../errors/ForwardBookingValidatio
 const map: { [key: string]: number } = {
   day: 1,
   week: 7,
-  month: 30
+  month: 30,
 };
 
 export class ForwardBooking implements IValueObject {
@@ -26,19 +26,19 @@ export class ForwardBooking implements IValueObject {
     }
   }
 
-  public static validate(value: string) {
+  public static validate(value: string): void {
+    // eslint-disable-next-line prefer-const
     let [count, period] = value.split(" ");
-
     if (!count || !period) throw new ForwardBookingValidationError();
-
     if (period.endsWith("s")) period = period.slice(0, -1);
     const periodDays = map[period];
 
-    if (!Number(count) || !periodDays) throw new ForwardBookingValidationError();
-
+    if (!Number(count) || !periodDays)
+      throw new ForwardBookingValidationError();
   }
 
   private getCountDays(value: string) {
+    // eslint-disable-next-line prefer-const
     let [count, period] = value.split(" ");
     if (period.endsWith("s")) period = period.slice(0, -1);
     return [Number(count), map[period]];

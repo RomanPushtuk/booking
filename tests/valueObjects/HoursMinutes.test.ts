@@ -22,22 +22,18 @@ describe("HoursMinutes Value Object", () => {
     const time1 = new HoursMinutes(validTime);
     const time2 = new HoursMinutes(validTime);
 
-    expect(HoursMinutes.equal(time1, time2)).toBe(true);
+    expect(HoursMinutes.compare(time1, time2, "equal")).toBe(true);
   });
   test("time1 should be less than time2", () => {
-
     const time1 = new HoursMinutes("10:55");
     const time2 = new HoursMinutes("11:55");
 
     expect(HoursMinutes.compare(time1, time2, "less")).toBe(true);
   });
   test("time1 should be less than time2", () => {
-
     const time1 = new HoursMinutes("10:55");
     const time2 = new HoursMinutes("11:55");
 
     expect(HoursMinutes.compare(time1, time2, "less")).toBe(true);
   });
-
-
 });

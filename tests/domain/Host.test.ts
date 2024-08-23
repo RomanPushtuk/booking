@@ -1,8 +1,9 @@
-import moment from "moment";
 import { CreateHostDTO } from "../../src/dtos/CreateHostDTO";
 import { CreateBookingDTO } from "../../src/dtos/CreateBookingDTO";
 import { Host } from "../../src/domain/Host";
 import { Booking } from "../../src/domain/Booking";
+import { HostDTO } from "../../src/dtos/HostDTO";
+import { BookingDTO } from "../../src/dtos/BookingDTO";
 
 jest.mock("moment", () => {
   return () =>
@@ -12,12 +13,12 @@ jest.mock("moment", () => {
 describe("Host", () => {
   test("checkIfBookingInThePast", async () => {
     const createHostDto = new CreateHostDTO({
-      id: "123",
       forwardBooking: "1week",
       workHours: [{ from: "9:00", to: "18:00" }],
       workDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],
     });
-    const host = Host.fromDTO(createHostDto);
+    const hostDto = new HostDTO({ id: "123", ...createHostDto });
+    const host = Host.fromDTO(hostDto);
 
     const createBookingDto = new CreateBookingDTO({
       clientId: "321",
@@ -25,8 +26,8 @@ describe("Host", () => {
       date: "20/08/2023",
       time: { from: "9:00", to: "10:00" },
     });
-
-    const booking = Booking.fromDTO(createBookingDto);
+    const bookingDto = new BookingDTO({ id: "123", ...createBookingDto });
+    const booking = Booking.fromDTO(bookingDto);
 
     expect(() => {
       host.addBooking(booking);

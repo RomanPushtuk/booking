@@ -14,12 +14,11 @@ export class Role {
     }
   }
 
-  static validate(value: string) {
-    roleSchema.validateSync(value);
+  static validate(role: string) {
+    roleSchema.validateSync(role);
   }
 
   static equal(role1: Role, role2: Role): boolean {
     return role1.value === role2.value;
   }
-
 }

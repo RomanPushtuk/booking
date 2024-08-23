@@ -7,7 +7,7 @@ export class Weekday implements IValueObject {
   constructor(weekday: string) {
     this.value = weekday;
     try {
-      Weekday.validate(this);
+      Weekday.validate(this.value);
     } catch (err) {
       console.log(err);
       throw new WeekdayValidationError();
@@ -18,7 +18,8 @@ export class Weekday implements IValueObject {
     return weekday1.value === weekday2.value;
   }
 
-  public static validate(weekday: Weekday) {
-    if (!Object.values<string>(Days).includes(weekday.value)) throw new WeekdayValidationError();
+  public static validate(weekday: string) {
+    if (!Object.values<string>(Days).includes(weekday))
+      throw new WeekdayValidationError();
   }
 }

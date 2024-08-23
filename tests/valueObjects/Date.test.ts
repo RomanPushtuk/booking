@@ -13,19 +13,16 @@ describe("Date Value Object", () => {
     const date1 = new Date(validData);
     const date2 = new Date(validData);
 
-    expect(() => Date.equal(date1, date2)).not.toThrow();
     expect(() => Date.compare(date1, date2, "equal")).not.toThrow();
   });
 
   test("Date1 should be more than Date2", () => {
-
     const date1 = new Date("04/12/2024");
     const date2 = new Date("03/12/2024");
 
     expect(Date.compare(date1, date2)).toBe(true);
   });
   test("Date1 should be less than Date2", () => {
-
     const date1 = new Date("03/12/2024");
     const date2 = new Date("04/12/2024");
 
@@ -41,6 +38,4 @@ describe("Date Value Object", () => {
     const invalidData = "99/9999";
     expect(() => new Date(invalidData)).toThrow();
   });
-
-
 });
