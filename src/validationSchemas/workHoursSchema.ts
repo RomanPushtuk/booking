@@ -11,4 +11,4 @@ export const workHoursSchema = yup
       })
       .required(),
   )
-  .required()
+  .required();

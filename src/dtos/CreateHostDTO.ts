@@ -1,4 +1,5 @@
 import { createHostDtoSchema } from "../validationSchemas/createHostDtoSchema";
+import { CreateHostDTOValidationError } from "../errors/CreateHostDTOValidationError";
 
 export class CreateHostDTO {
   forwardBooking: string;
@@ -14,7 +15,7 @@ export class CreateHostDTO {
       createHostDtoSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("CreateHostDTO validation error");
+      throw new CreateHostDTOValidationError();
     }
   }
 }

@@ -1,21 +1,20 @@
-import { updateBookingDTOSchema } from "../../src/validationSchemas/updateBookingDTOSchema";
+import { UpdateBookingDTO } from "../../src/dtos/UpdateBookingDTO";
 
 describe("updateBookingDTO", () => {
-  test("Valid updateBookingDTO should not throw an Error", async () => {
+  test("Valid updateBookingDTO should not throw an Error", () => {
     const validData = {
       id: "123",
       date: "08.08.2024",
       time: {
         from: "09:00",
-        to: "18:00"
-      }
+        to: "18:00",
+      },
     };
 
-    await expect(updateBookingDTOSchema.validate(validData)).resolves.not.toThrow();
+    expect(() => new UpdateBookingDTO(validData)).not.toThrow();
   });
 
-  test("Invalid updateBookingDTO should throw an Error", async () => {
-    await expect(updateBookingDTOSchema.validate({})).rejects.toThrow();
+  test("Invalid updateBookingDTO should throw an Error", () => {
+    expect(() => new UpdateBookingDTO({})).toThrow();
   });
-
 });

@@ -1,4 +1,5 @@
 import { hostDtoSchema } from "../validationSchemas/hostDtoSchema";
+import { HostDTOValidationError } from "../errors/HostDTOValidationError";
 
 export class HostDTO {
   id: string;
@@ -15,7 +16,7 @@ export class HostDTO {
       hostDtoSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("CreateHostDTO validation error");
+      throw new HostDTOValidationError();
     }
   }
 }

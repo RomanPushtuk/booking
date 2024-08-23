@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 export const updateHostDtoSchema = yup.object().shape({
   id: yup.string().required(),
-  forwardBooking: yup.string().required(),
+  forwardBooking: yup.string().notRequired(),
   workHours: yup
     .array()
     .of(
@@ -12,8 +12,8 @@ export const updateHostDtoSchema = yup.object().shape({
           from: yup.string().required(),
           to: yup.string().required(),
         })
-        .required(),
+        .notRequired(),
     )
     .required(),
-  workDays: yup.array().of(yup.string()).required(),
+  workDays: yup.array().of(yup.string()).notRequired(),
 });

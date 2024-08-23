@@ -1,4 +1,5 @@
 import { createBookingDTOSchema } from "../validationSchemas/createBookingDTOSchema";
+import { CreateBookingDTOValidationError } from "../errors/CreateBookingDTOValidationError";
 
 export class CreateBookingDTO {
   clientId: string;
@@ -16,7 +17,7 @@ export class CreateBookingDTO {
       createBookingDTOSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("CreateBookingDTO validation error");
+      throw new CreateBookingDTOValidationError();
     }
   }
 }

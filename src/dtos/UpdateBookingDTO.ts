@@ -1,4 +1,5 @@
 import { updateBookingDTOSchema } from "../validationSchemas/updateBookingDTOSchema";
+import { UpdateBookingDTOValidationError } from "../errors/UpdateBookingDTOValidationError";
 
 export class UpdateBookingDTO {
   readonly id: string;
@@ -14,7 +15,7 @@ export class UpdateBookingDTO {
       updateBookingDTOSchema.validateSync(this);
     } catch (err) {
       console.log(err);
-      throw new Error("UpdateBookingDTO validation error");
+      throw new UpdateBookingDTOValidationError();
     }
   }
 }

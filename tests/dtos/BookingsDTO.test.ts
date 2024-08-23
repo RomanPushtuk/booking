@@ -1,8 +1,7 @@
-import { bookingDtoSchema } from "../../src/validationSchemas/bookingDtoSchema";
+import { BookingDTO } from "../../src/dtos/BookingDTO";
 
 describe("bookingDto", () => {
-
-  test("Valid bookingDto should not throw an Error", async () => {
+  test("Valid bookingDto should not throw an Error", () => {
     const validData = {
       id: "123",
       clientId: "456",
@@ -10,16 +9,14 @@ describe("bookingDto", () => {
       date: "2024-08-23",
       time: {
         from: "10:00",
-        to: "11:00"
-      }
+        to: "11:00",
+      },
     };
 
-    await expect(bookingDtoSchema.validate(validData)).resolves.not.toThrow();
+    expect(() => new BookingDTO(validData)).not.toThrow();
   });
 
-  test("Invalid bookingDto should throw an Error ", async () => {
-
-    await expect(bookingDtoSchema.validate({})).rejects.toThrow();
+  test("Invalid bookingDto should throw an Error ", () => {
+    expect(() => new BookingDTO({})).toThrow();
   });
-
 });

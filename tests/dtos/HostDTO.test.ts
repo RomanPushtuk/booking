@@ -1,8 +1,8 @@
-import { hostDtoSchema } from "../../src/validationSchemas/hostDtoSchema";
 import { ForwardBookingPeriods } from "../../src/enums/ForwardBookingPeriods";
+import { HostDTO } from "../../src/dtos/HostDTO";
 
 describe("hostDto", () => {
-  test("Valid hostDto should not throw an Error", async () => {
+  test("Valid hostDto should not throw an Error", () => {
     const validData = {
       id: "123",
       forwardBooking: {
@@ -16,11 +16,10 @@ describe("hostDto", () => {
       workDays: ["Monday", "Tuesday", "Wednesday"],
     };
 
-    await expect(hostDtoSchema.validate(validData)).resolves.not.toThrow();
+    expect(() => new HostDTO(validData)).not.toThrow();
   });
 
-  test("Invalid hostDto should throw an Error", async () => {
-    await expect(hostDtoSchema.validate({})).rejects.toThrow();
+  test("Invalid hostDto should throw an Error", () => {
+    expect(() => new HostDTO({})).toThrow();
   });
-
 });
