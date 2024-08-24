@@ -1,9 +1,8 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import * as knex from "knex";
 import { Host } from "../domain/Host";
-import { Id } from "../valueObjects/Id";
 import { BookingRepository } from "./BookingRepository";
-import { CreateHostDTO } from "../dtos/CreateHostDTO";
+import { HostDTO } from "../dtos/HostDTO";
 
 @Service()
 export class HostRepository {
@@ -16,7 +15,7 @@ export class HostRepository {
     const data = await this._db("hosts").select("*");
     const dtos = data.map(
       (item) =>
-        new CreateHostDTO({
+        new HostDTO({
           ...item,
           workHours: JSON.parse(item.workHours),
           workDays: JSON.parse(item.workDays),
@@ -30,7 +29,7 @@ export class HostRepository {
     const hostData = await this._db("hosts").where({ id }).first();
     const upcomingBookings = await this._bookingRepository.getAll();
 
-    const createHostDTO = new CreateHostDTO({
+    const createHostDTO = new HostDTO({
       ...hostData,
       workHours: JSON.parse(hostData.workHours),
       workDays: JSON.parse(hostData.workDays),

@@ -1,9 +1,8 @@
-import { nanoid } from "nanoid";
-import { CreateUserDTO } from "../dtos/CreateUserDTO";
 import { Email } from "../valueObjects/Email";
 import { Password } from "../valueObjects/Password";
 import { Id } from "../valueObjects/Id";
 import { Role } from "../valueObjects/Role";
+import { UserDTO } from "../dtos/UserDTO";
 
 interface IUserProperties {
   id: string;
@@ -25,8 +24,8 @@ export class User {
     this.role = role;
   }
 
-  public static fromDTO(data: CreateUserDTO): User {
-    const id = new Id(nanoid(8));
+  public static fromDTO(data: UserDTO): User {
+    const id = new Id(data.id);
     const email = new Email(data.email);
     const password = new Password(data.password);
     const role = new Role(data.role);
@@ -37,7 +36,7 @@ export class User {
     return {
       id: this.id.value,
       email: this.email.value,
-      password: this.password.value,
+      password: Password.encrypt(this.password.value),
       role: this.role.value,
     };
   }

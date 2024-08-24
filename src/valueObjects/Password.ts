@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import bcrypt from "bcrypt";
+import * as crypto from "crypto";
 import { PasswordValidationError } from "../errors/PasswordValidationError";
 import { passwordRegex } from "../constants/passwordRegex";
 
@@ -20,14 +20,8 @@ export class Password {
     return password1.value === password2.value;
   }
 
-  static encrypt(password: Password) {
-    //TODO not sure if made it as you wanted
-    const salt = 7;
-    return bcrypt.hashSync(password.value, salt);
-  }
-
-  static verify(password: Password, hashedPassword: string): boolean {
-    return bcrypt.compareSync(password.value, hashedPassword);
+  static encrypt(password: string): string {
+    return crypto.hash("sha1", password);
   }
 
   static validate(value: string) {

@@ -38,12 +38,4 @@ describe("Password Value Object", () => {
 
     expect(Password.equal(password1, password2)).toBe(true);
   });
-  test("Passwords should be equal", () => {
-    const validData = "12345678Qwe";
-
-    const password = new Password(validData);
-    const hashedPassword = Password.encrypt(password);
-
-    expect(Password.verify(password, hashedPassword)).toBe(true);
-  });
 });

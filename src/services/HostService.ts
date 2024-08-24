@@ -10,6 +10,7 @@ import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
+import { nanoid } from "nanoid";
 
 @Service()
 export class HostService {
@@ -36,7 +37,8 @@ export class HostService {
   }
 
   public async createHost(data: CreateHostDTO): Promise<{ id: string }> {
-    const host = Host.fromDTO(data);
+    const hostDto = new HostDTO({ id: nanoid(8), ...data });
+    const host = Host.fromDTO(hostDto);
     return await this._unitOfWork.hostRepository.save(host);
   }
 
@@ -53,8 +55,8 @@ export class HostService {
 
   public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
     const host = await this._unitOfWork.hostRepository.getById(data.hostId);
-
-    const booking = Booking.fromDTO(data);
+    const bookingDto = new BookingDTO({ id: nanoid(8), ...data });
+    const booking = Booking.fromDTO(bookingDto);
     host.addBooking(booking);
     await this._unitOfWork.hostRepository.save(host);
 

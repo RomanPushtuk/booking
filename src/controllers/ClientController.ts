@@ -25,42 +25,35 @@ import { BookingFilters } from "../application/BookingFilters";
 export class ClientController {
   constructor(@Inject() private _clientService: ClientService) {}
 
-  @Get("/:id")
-  // @Authorized([Roles.CLIENT])
-  async getClient(
-    @Param("id") id: string,
-    // @CurrentUser({ required: true }) user: User,
-  ): Promise<ClientDTO> {
-    console.log("id - ", id);
-    // if (user.id.value !== id) throw new Error("400");
-    return this._clientService.getClient(id);
+  @Get("/me")
+  @Authorized([Roles.CLIENT])
+  async getMe(@CurrentUser({ required: true }) user: User): Promise<ClientDTO> {
+    console.log("user - ", user);
+    return this._clientService.getClient(user.id.value);
   }
 
-  @Delete("/:id")
+  @Delete("/me")
   @Authorized([Roles.CLIENT])
   async deleteClient(
-    @Param("id") id: string,
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
-    if (user.id.value !== id) throw new Error("400");
-    return this._clientService.deleteClient(id);
+    return this._clientService.deleteClient(user.id.value);
   }
 
-  @Get("/:id/bookins")
-  // @Authorized([Roles.CLIENT])
+  @Get("/bookins")
+  @Authorized([Roles.CLIENT])
   async getBookings(
-    @Param("id") clientId: string,
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
     @QueryParam("dateFrom") dateFrom: string = moment().format("DD/MM/YYYY"),
     @QueryParam("dateTo") dateTo: string = moment().format("DD/MM/YYYY"),
     @QueryParam("timeFrom") timeFrom: string = "0:00",
     @QueryParam("timeTo") timeTo: string = "23:59",
-    // @CurrentUser({ required: true }) user: User,
+    @CurrentUser({ required: true }) user: User,
   ): Promise<Array<BookingDTO>> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
     const filters = new BookingFilters(
-      clientId,
+      user.id.value,
       "",
       dateFrom,
       dateTo,
@@ -70,14 +63,16 @@ export class ClientController {
     return this._clientService.getBookings(sorting, filters);
   }
 
-  @Post("/:id/bookings")
-  // @Authorized([Roles.CLIENT])
+  @Post("/bookings")
+  @Authorized([Roles.CLIENT])
   public async createBooking(
-    @Param("id") id: string,
     @Body() createBookingBody: any,
+    @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
-    console.log("createBookingBody -", createBookingBody);
-    const createBookingDTO = new CreateBookingDTO(createBookingBody);
+    const createBookingDTO = new CreateBookingDTO({
+      clientId: user.id.value,
+      ...createBookingBody,
+    });
     return this._clientService.createBooking(createBookingDTO);
   }
 

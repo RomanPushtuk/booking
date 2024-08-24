@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { createExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import * as knex from "knex";
 import { db } from "./db";
 
@@ -22,24 +23,33 @@ const app = createExpressServer({
     // you can use them to provide granular access check
     // checker must return either boolean (true or false)
     // either promise that resolves a boolean value
-    const token = action.request.headers["Authorization"];
+    const token = action.request.headers["authorization"];
     const uow = Container.get(UnitOfWorkService);
     // TODO - add identity manager support in order not to request
     // the user from the database every time, but to store it in the local Map
-    const user = uow.userRepository.findOneByToken(token);
+    const { email, password } = jwt.verify(token, "secret") as JwtPayload;
+    const user = await uow.userRepository.findByEmailAndPassword(
+      email,
+      password,
+    );
     if (!user || !roles.length) return false;
-    if (roles.includes(user.role)) return true;
+    if (roles.includes(user.role.value)) return true;
 
     return false;
   },
   currentUserChecker: async (action: Action) => {
     // here you can use request/response objects from action
     // you need to provide a user object that will be injected in controller actions
-    const token = action.request.headers["Authorization"];
+    const token = action.request.headers["authorization"];
     const uow = Container.get(UnitOfWorkService);
     // TODO - add identity manager support in order not to request
     // the user from the database every time, but to store it in the local Map
-    return uow.userRepository.findOneByToken(token);
+    const { email, password } = jwt.verify(token, "secret") as JwtPayload;
+    const user = await uow.userRepository.findByEmailAndPassword(
+      email,
+      password,
+    );
+    return user;
   },
   classTransformer: false,
   controllers: [ClientController, HostController, AuthController],

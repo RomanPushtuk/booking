@@ -20,6 +20,7 @@ export class UnitOfWorkService {
         this.trx = trx;
         const res = await cb();
         resolve(res);
+        this.trx = null;
       });
     });
   }

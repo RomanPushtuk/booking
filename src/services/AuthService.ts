@@ -1,4 +1,5 @@
 import { Inject, Service } from "typedi";
+import jwt from "jsonwebtoken";
 import { Roles } from "../enums/Roles";
 import { CreateUserDTO } from "../dtos/CreateUserDTO";
 import { User } from "../domain/User";
@@ -8,25 +9,34 @@ import { Client } from "../domain/Client";
 import { Host } from "../domain/Host";
 import { HostDTO } from "../dtos/HostDTO";
 import { ClientDTO } from "../dtos/ClientDTO";
+import { UserDTO } from "../dtos/UserDTO";
+import { nanoid } from "nanoid";
+import { Password } from "../valueObjects/Password";
+import { LoginUserDTO } from "../dtos/LoginUserDTO";
 
 @Service()
 export class AuthService {
   constructor(@Inject() private _unitOfWork: UnitOfWorkService) {}
 
-  async register(data: CreateUserDTO): Promise<{ id: string }> {
-    return this._unitOfWork.makeTransactional<Promise<{ id: string }>>(
+  async register(data: CreateUserDTO): Promise<{ token: string }> {
+    return this._unitOfWork.makeTransactional<Promise<{ token: string }>>(
       async () => {
-        const user = User.fromDTO(data);
+        const userDto = new UserDTO({ id: nanoid(8), ...data });
+        const user = User.fromDTO(userDto);
         await this._unitOfWork.userRepository.save(user);
+
+        const userProperties = user.getProperties();
+        const token = jwt.sign(userProperties, "secret", { expiresIn: "7h" });
 
         if (user.role.value === Roles.CLIENT) {
           const clientDto = new ClientDTO({ id: user.id.value });
           const client = Client.fromDTO(clientDto);
-          return await this._unitOfWork.clientRepository.save(client);
+          await this._unitOfWork.clientRepository.save(client);
+          return { token };
         }
 
         if (user.role.value === Roles.HOST) {
-          const createHostDto = new CreateHostDTO({
+          const hostDto = new HostDTO({
             id: user.id.value,
             workHours: [
               { from: "9:00", to: "13:00" },
@@ -35,14 +45,27 @@ export class AuthService {
             workDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],
             forwardBooking: "1 week",
           });
-
-          const hostDto = new HostDTO({ id: user.id.value, ...createHostDto });
           const host = Host.fromDTO(hostDto);
-          return await this._unitOfWork.hostRepository.save(host);
+          await this._unitOfWork.hostRepository.save(host);
+          return { token };
         }
 
         throw new Error("Unknown role");
       },
     );
+  }
+
+  async login(data: LoginUserDTO): Promise<{ token: string }> {
+    const { email, password } = data;
+
+    const user = await this._unitOfWork.userRepository.findByEmailAndPassword(
+      email,
+      Password.encrypt(password),
+    );
+
+    if (!user) throw new Error("user was not registred");
+    const userProperties = user.getProperties();
+    const token = jwt.sign(userProperties, "secret", { expiresIn: "7h" });
+    return { token };
   }
 }
