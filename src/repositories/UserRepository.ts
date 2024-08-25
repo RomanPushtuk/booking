@@ -7,10 +7,6 @@ import { UserDTO } from "../dtos/UserDTO";
 export class UserRepository {
   constructor(private _db: knex.Knex) {}
 
-  findOneByToken(token: string): UserDTO | null {
-    throw new Error("Method not implemented");
-  }
-
   async findByEmailAndPassword(
     email: string,
     password: string,
@@ -23,13 +19,7 @@ export class UserRepository {
     if (!data) return null;
     const userDto = new UserDTO(data);
 
-    const hashedPassword = userDto.password;
-    const length = Math.floor(userDto.password.length / 2);
-    const part1 = hashedPassword.slice(0, length).toUpperCase();
-    const part2 = hashedPassword.slice(length);
-    const correctPassword = part1 + part2;
-
-    const user = User.fromDTO({ ...userDto, password: correctPassword });
+    const user = User.fromDTO(userDto);
     return user;
   }
 

@@ -7,9 +7,13 @@ export class Password {
   readonly value: string;
 
   constructor(value: string) {
-    this.value = value;
     try {
-      Password.validate(this.value);
+      if (Password.isValidSHA1(value)) {
+        this.value = value;
+        return;
+      }
+      Password.validate(value);
+      this.value = Password.encrypt(value);
     } catch (err) {
       console.log(err);
       throw new PasswordValidationError();
@@ -22,6 +26,10 @@ export class Password {
 
   static encrypt(password: string): string {
     return crypto.hash("sha1", password);
+  }
+
+  static isValidSHA1(hash: string): boolean {
+    return Boolean(hash.match(/^[a-fA-F0-9]{40}$/));
   }
 
   static validate(value: string) {

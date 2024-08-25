@@ -36,7 +36,7 @@ export class User {
     return {
       id: this.id.value,
       email: this.email.value,
-      password: Password.encrypt(this.password.value),
+      password: this.password.value,
       role: this.role.value,
     };
   }

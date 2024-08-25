@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { Roles } from "../enums/Roles";
 import { CreateUserDTO } from "../dtos/CreateUserDTO";
 import { User } from "../domain/User";
-import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
 import { Client } from "../domain/Client";
 import { Host } from "../domain/Host";
@@ -11,8 +10,8 @@ import { HostDTO } from "../dtos/HostDTO";
 import { ClientDTO } from "../dtos/ClientDTO";
 import { UserDTO } from "../dtos/UserDTO";
 import { nanoid } from "nanoid";
-import { Password } from "../valueObjects/Password";
 import { LoginUserDTO } from "../dtos/LoginUserDTO";
+import { Password } from "../valueObjects/Password";
 
 @Service()
 export class AuthService {
@@ -21,18 +20,19 @@ export class AuthService {
   async register(data: CreateUserDTO): Promise<{ token: string }> {
     return this._unitOfWork.makeTransactional<Promise<{ token: string }>>(
       async () => {
-        const userDto = new UserDTO({ id: nanoid(8), ...data });
+        const userDto = new UserDTO({
+          id: nanoid(8),
+          ...data,
+        });
+        const loginUserDTO = new LoginUserDTO(userDto);
         const user = User.fromDTO(userDto);
         await this._unitOfWork.userRepository.save(user);
-
-        const userProperties = user.getProperties();
-        const token = jwt.sign(userProperties, "secret", { expiresIn: "7h" });
 
         if (user.role.value === Roles.CLIENT) {
           const clientDto = new ClientDTO({ id: user.id.value });
           const client = Client.fromDTO(clientDto);
           await this._unitOfWork.clientRepository.save(client);
-          return { token };
+          return this.login(loginUserDTO);
         }
 
         if (user.role.value === Roles.HOST) {
@@ -47,7 +47,7 @@ export class AuthService {
           });
           const host = Host.fromDTO(hostDto);
           await this._unitOfWork.hostRepository.save(host);
-          return { token };
+          return this.login(loginUserDTO);
         }
 
         throw new Error("Unknown role");

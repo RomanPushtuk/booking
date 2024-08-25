@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import * as knex from "knex";
 import { Client } from "../domain/Client";
 import { Id } from "../valueObjects/Id";
