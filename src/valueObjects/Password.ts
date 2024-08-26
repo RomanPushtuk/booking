@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import * as crypto from "crypto";
 import { PasswordValidationError } from "../errors/PasswordValidationError";
-import { passwordRegex } from "../constants/passwordRegex";
+import { PASSWORD_REGEX } from "../constants/PASSWORD_REGEX";
 
 export class Password {
   readonly value: string;
@@ -33,7 +33,7 @@ export class Password {
   }
 
   static validate(value: string) {
-    const emailSchema = yup.string().matches(passwordRegex).min(6).max(123);
+    const emailSchema = yup.string().matches(PASSWORD_REGEX).min(6).max(123);
     emailSchema.validateSync(value);
   }
 }
