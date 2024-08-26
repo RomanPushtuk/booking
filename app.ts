@@ -27,14 +27,28 @@ const app = createExpressServer({
     const uow = Container.get(UnitOfWorkService);
     // TODO - add identity manager support in order not to request
     // the user from the database every time, but to store it in the local Map
-    const { email, password } = jwt.verify(token, "secret") as JwtPayload;
+    const { email, password, exp } = jwt.verify(token, "secret") as JwtPayload;
+
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password,
+      password
     );
-    if (!user || !roles.length) return false;
-    if (roles.includes(user.role.value)) return true;
 
+    if (!user || !roles.length || !exp) return false;
+
+    const fiveMin = 1000 * 60 * 5;
+    const tokenExpDate = exp * 1000;
+    const fiveMinBeforeNow = Date.now() - fiveMin;
+
+    if (tokenExpDate > fiveMinBeforeNow) {
+      const userProperties = user.getProperties();
+      const token = jwt.sign(userProperties, "secret");
+      console.log("NEW TOKEN");
+
+      action.response.set("new-token", token);
+    }
+
+    if (roles.includes(user.role.value)) return true;
     return false;
   },
   currentUserChecker: async (action: Action) => {
@@ -47,7 +61,7 @@ const app = createExpressServer({
     const { email, password } = jwt.verify(token, "secret") as JwtPayload;
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password,
+      password
     );
     return user;
   },
