@@ -3,7 +3,11 @@ import { createExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import * as knex from "knex";
+import moment from "moment";
 import { db } from "./db";
+
+import { FIVE_MINUTES } from "./src/constants/FIVE_MINUTES";
+import { NOW } from "./src/constants/NOW";
 
 // its important to set container before any operation you do with routing-controllers,
 // including importing controllers
@@ -31,20 +35,17 @@ const app = createExpressServer({
 
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password
+      password,
     );
 
     if (!user || !roles.length || !exp) return false;
 
-    const fiveMin = 1000 * 60 * 5;
-    const tokenExpDate = exp * 1000;
-    const fiveMinBeforeNow = Date.now() - fiveMin;
+    const tokenExp = moment(exp * 1000); // because the jsonwebtoken sets the exp in seconds
+    const now = moment(NOW);
 
-    if (tokenExpDate > fiveMinBeforeNow) {
+    if (tokenExp.diff(now) < FIVE_MINUTES) {
       const userProperties = user.getProperties();
-      const token = jwt.sign(userProperties, "secret");
-      console.log("NEW TOKEN");
-
+      const token = jwt.sign(userProperties, "secret", { expiresIn: "7h" });
       action.response.set("new-token", token);
     }
 
@@ -61,7 +62,7 @@ const app = createExpressServer({
     const { email, password } = jwt.verify(token, "secret") as JwtPayload;
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password
+      password,
     );
     return user;
   },
