@@ -9,15 +9,16 @@ import {
   QueryParam,
   JsonController,
 } from "routing-controllers";
+import moment from "moment";
 import { Inject, Service } from "typedi";
 import { Roles } from "../enums/Roles";
 import { User } from "../domain/User";
 import { HostService } from "../services/HostService";
-import { BookingSorting } from "../types/BookingSorting";
-import { BookingFilters } from "../types/BookingFilters";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
 import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
+import { BookingSorting } from "../application/BookingSorting";
+import { BookingFilters } from "../application/BookingFilters";
 
 @JsonController("/hosts")
 @Service()
@@ -34,47 +35,41 @@ export class HostController {
     return await this._hostService.getHost(id);
   }
 
-  @Patch("/:id")
+  @Patch("/me")
   @Authorized([Roles.HOST])
   async updateHost(
-    @Param("id") id: string,
     @Body() updateHostDTO: UpdateHostDTO,
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
-    if (user.id.value !== id) throw new Error("400");
-    return await this._hostService.updateHost(id, updateHostDTO);
+    return await this._hostService.updateHost(user.id.value, updateHostDTO);
   }
 
-  @Delete("/:id")
+  @Delete("/me")
+  @Authorized([Roles.HOST])
   async deleteClient(
-    @Param("id") id: string,
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
-    if (user.id.value !== id) throw new Error("400");
-    return await this._hostService.deleteHost(id);
+    return await this._hostService.deleteHost(user.id.value);
   }
 
-  @Get("/:id/bookins")
+  @Get("/:id/bookings")
   public async getBookings(
+    @Param("id") hostId: string,
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
-    @QueryParam("dateFrom") dateFrom: string,
-    @QueryParam("dateTo") dateTo: string,
-    @QueryParam("timeFrom") timeFrom: string,
-    @QueryParam("timeTo") timeTo: string,
-    @CurrentUser({ required: true }) user: User,
+    @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
+    @QueryParam("dateTo") dateTo: string = moment().toISOString(),
+    @QueryParam("timeFrom") timeFrom: string = "0:00",
+    @QueryParam("timeTo") timeTo: string = "23:59",
   ): Promise<Array<BookingDTO>> {
-    const sorting: BookingSorting = {
-      direction: sortDirection,
-      property: sortProperty,
-    };
-    const filters: BookingFilters = {
-      hostId: user.id.value,
+    const sorting = new BookingSorting(sortDirection, sortProperty);
+    const filters = new BookingFilters(
+      hostId,
       dateFrom,
       dateTo,
       timeFrom,
       timeTo,
-    };
+    );
     return this._hostService.getBookings(sorting, filters);
   }
 }

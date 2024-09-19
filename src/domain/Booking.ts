@@ -74,8 +74,8 @@ export class Booking {
       new HoursMinutes(data.time.from),
       new HoursMinutes(data.time.to),
     );
-    const canceled = data.canceled;
-    const deleted = data.deleted;
+    const canceled = false;
+    const deleted = false;
 
     return new Booking(id, clientId, hostId, date, time, canceled, deleted);
   }

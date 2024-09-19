@@ -10,13 +10,13 @@ import {
   QueryParam,
   JsonController,
 } from "routing-controllers";
+import moment from "moment";
 import { Roles } from "../enums/Roles";
 import { ClientService } from "../services/ClientService";
 import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { ClientDTO } from "../dtos/ClientDTO";
 import { User } from "../domain/User";
-import moment from "moment";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
 
@@ -28,7 +28,6 @@ export class ClientController {
   @Get("/me")
   @Authorized([Roles.CLIENT])
   async getMe(@CurrentUser({ required: true }) user: User): Promise<ClientDTO> {
-    console.log("user - ", user);
     return this._clientService.getClient(user.id.value);
   }
 
@@ -45,8 +44,8 @@ export class ClientController {
   async getBookings(
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
-    @QueryParam("dateFrom") dateFrom: string = moment().format("DD/MM/YYYY"),
-    @QueryParam("dateTo") dateTo: string = moment().format("DD/MM/YYYY"),
+    @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
+    @QueryParam("dateTo") dateTo: string = moment().toISOString(),
     @QueryParam("timeFrom") timeFrom: string = "0:00",
     @QueryParam("timeTo") timeTo: string = "23:59",
     @CurrentUser({ required: true }) user: User,
@@ -54,7 +53,7 @@ export class ClientController {
     const sorting = new BookingSorting(sortDirection, sortProperty);
     const filters = new BookingFilters(
       user.id.value,
-      "",
+      undefined,
       dateFrom,
       dateTo,
       timeFrom,
@@ -76,7 +75,7 @@ export class ClientController {
     return this._clientService.createBooking(createBookingDTO);
   }
 
-  @Post("/:clientId/bookins/:bookingId/cancel")
+  @Post("/bookins/:bookingId/cancel")
   @Authorized([Roles.CLIENT])
   async cancelBooking(
     @Param("bookingId") bookingId: string,
