@@ -8,4 +8,8 @@ export class WorkPeriod implements IValueObject {
     this.from = from;
     this.to = to;
   }
+
+  public static fromFlat(from: string, to: string) {
+    return new WorkPeriod(new HoursMinutes(from), new HoursMinutes(to));
+  }
 }

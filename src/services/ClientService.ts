@@ -4,7 +4,6 @@ import { Client } from "../domain/Client";
 import { HostService } from "./HostService";
 import { ClientDTO } from "../dtos/ClientDTO";
 import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
-import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
@@ -13,20 +12,24 @@ import { BookingFilters } from "../application/BookingFilters";
 @Service()
 export class ClientService {
   constructor(
-    // @Inject() private _clientReposotory: ClientRepository,
-    // @Inject() private _bookingRepository: BookingRepository,
     @Inject() private _hostService: HostService,
     @Inject() private _unitOfWork: UnitOfWorkService,
   ) {}
+
   public async getClient(id: string): Promise<ClientDTO> {
     const client = await this._unitOfWork.clientRepository.getById(id);
-    return client.getProperties();
+    const clientProperties = client.getProperties();
+    const clientDto = new ClientDTO(clientProperties);
+    return clientDto;
   }
+
   public async deleteClient(id: string): Promise<{ id: string }> {
-    const { value } = await this._unitOfWork.clientRepository.deleteById(id);
-    return { id: value };
+    const client = await this._unitOfWork.clientRepository.getById(id);
+    client.seIsDeleted(true);
+    return await this._unitOfWork.clientRepository.save(client);
   }
-  async createClient(data: CreateClientDTO): Promise<{ id: string }> {
+
+  public async createClient(data: CreateClientDTO): Promise<{ id: string }> {
     const client = Client.fromDTO(data);
     return await this._unitOfWork.clientRepository.save(client);
   }
@@ -42,12 +45,11 @@ export class ClientService {
     const dtos = bookings.map((booking) => booking.getProperties());
     return dtos;
   }
+
   public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
     return this._hostService.createBooking(data);
   }
-  public async updateBooking(data: UpdateBookingDTO): Promise<{ id: string }> {
-    return this._hostService.updateBooking(data);
-  }
+
   public async cancelBooking(
     id: string,
     clientId: string,

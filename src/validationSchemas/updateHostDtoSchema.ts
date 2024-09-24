@@ -1,7 +1,6 @@
 import * as yup from "yup";
 
 export const updateHostDtoSchema = yup.object().shape({
-  forwardBooking: yup.string().notRequired(),
   workHours: yup
     .array()
     .of(
@@ -13,6 +12,6 @@ export const updateHostDtoSchema = yup.object().shape({
         })
         .notRequired(),
     )
-    .required(),
+    .notRequired(),
   workDays: yup.array().of(yup.string()).notRequired(),
 });

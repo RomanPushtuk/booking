@@ -38,23 +38,25 @@ export class HostController {
   @Patch("/me")
   @Authorized([Roles.HOST])
   async updateHost(
-    @Body() updateHostDTO: UpdateHostDTO,
+    @Body() updateHostBody: any,
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
+    const updateHostDTO = new UpdateHostDTO(updateHostBody);
     return await this._hostService.updateHost(user.id.value, updateHostDTO);
   }
 
   @Delete("/me")
   @Authorized([Roles.HOST])
-  async deleteClient(
+  async deleteHost(
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
     return await this._hostService.deleteHost(user.id.value);
   }
 
   @Get("/:id/bookings")
-  public async getBookings(
+  public async getHostBookings(
     @Param("id") hostId: string,
+    @QueryParam("clientId") clientId?: string,
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
     @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
@@ -64,12 +66,13 @@ export class HostController {
   ): Promise<Array<BookingDTO>> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
     const filters = new BookingFilters(
+      clientId,
       hostId,
       dateFrom,
       dateTo,
       timeFrom,
       timeTo,
     );
-    return this._hostService.getBookings(sorting, filters);
+    return this._hostService.getHostBookings(sorting, filters);
   }
 }

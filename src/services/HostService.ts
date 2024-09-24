@@ -1,4 +1,5 @@
 import { Inject, Service } from "typedi";
+import { nanoid } from "nanoid";
 import { Booking } from "../domain/Booking";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { Host } from "../domain/Host";
@@ -10,14 +11,17 @@ import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
 import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
-import { nanoid } from "nanoid";
+import { WorkPeriod } from "../application/WorkPeriod";
+import { HoursMinutes } from "../valueObjects/HoursMinutes";
+import { Weekday } from "../valueObjects/Weekday";
 
 @Service()
 export class HostService {
   constructor(@Inject() private _unitOfWork: UnitOfWorkService) {}
 
-  getHost(id: string): Promise<HostDTO> {
-    throw new Error("Method not implemented.");
+  public async getHost(id: string): Promise<HostDTO> {
+    const host = await this._unitOfWork.hostRepository.getById(id);
+    return new HostDTO(host.getProperties());
   }
 
   public async getHosts(): Promise<HostDTO[]> {
@@ -25,15 +29,32 @@ export class HostService {
     return hosts.map((host) => new HostDTO(host.getProperties()));
   }
 
-  updateHost(
+  public async updateHost(
     id: string,
     updateHostDTO: UpdateHostDTO,
   ): Promise<{ id: string }> {
-    throw new Error("Method not implemented.");
+    const host = await this._unitOfWork.hostRepository.getById(id);
+    const { workHours, workDays } = updateHostDTO;
+
+    if (workHours) {
+      const newWorkHours = workHours.map(({ from, to }) =>
+        WorkPeriod.fromFlat(from, to),
+      );
+      host.setWorkHours(newWorkHours);
+    }
+
+    if (workDays) {
+      const newWorkDays = workDays.map((item) => new Weekday(item));
+      host.setWorkDays(newWorkDays);
+    }
+
+    return await this._unitOfWork.hostRepository.save(host);
   }
 
-  deleteHost(id: string): Promise<{ id: string }> {
-    throw new Error("Method not implemented.");
+  public async deleteHost(id: string): Promise<{ id: string }> {
+    const host = await this._unitOfWork.hostRepository.getById(id);
+    host.setIsDeleted(true);
+    return await this._unitOfWork.hostRepository.save(host);
   }
 
   public async createHost(data: CreateHostDTO): Promise<{ id: string }> {
@@ -42,7 +63,7 @@ export class HostService {
     return await this._unitOfWork.hostRepository.save(host);
   }
 
-  public async getBookings(
+  public async getHostBookings(
     sorting: BookingSorting,
     filters: BookingFilters,
   ): Promise<Array<BookingDTO>> {
@@ -50,7 +71,7 @@ export class HostService {
       sorting,
       filters,
     );
-    return [];
+    return bookings.map((item) => new BookingDTO(item));
   }
 
   public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
@@ -60,16 +81,6 @@ export class HostService {
     host.addBooking(booking);
     await this._unitOfWork.hostRepository.save(host);
 
-    return { id: booking.id.value };
-  }
-
-  public async updateBooking(data: UpdateBookingDTO): Promise<{ id: string }> {
-    const booking = await this._unitOfWork.bookingRepository.getById(data.id);
-    const host = await this._unitOfWork.hostRepository.getById(
-      booking.hostId.value,
-    );
-    host.updateBooking(booking, data);
-    await this._unitOfWork.hostRepository.save(host);
     return { id: booking.id.value };
   }
 

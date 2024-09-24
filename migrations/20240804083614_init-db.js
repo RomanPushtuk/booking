@@ -14,15 +14,20 @@ exports.up = function (knex) {
     })
     .createTable("clients", function (table) {
       table.string("id").primary();
-      table.foreign("id").references("users.id");
+      table.boolean("isDeleted").notNullable();
+
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
+
+      table.foreign("id").references("users.id");
     })
     .createTable("hosts", function (table) {
       table.string("id").primary();
       table.jsonb("workHours").notNullable();
       table.jsonb("workDays").notNullable();
       table.string("forwardBooking").notNullable();
+      table.boolean("isDeleted").notNullable();
+
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
 
@@ -32,11 +37,17 @@ exports.up = function (knex) {
       table.string("id").primary();
       table.string("clientId").notNullable();
       table.string("hostId").notNullable();
-      table.string("date").notNullable();
-      table.jsonb("time").notNullable();
+      table.date("date").notNullable();
+      table.time("timeFrom").notNullable();
+      table.time("timeTo").notNullable();
+      table.boolean("isСanceled").notNullable();
+      table.boolean("isDeleted").notNullable();
 
       table.foreign("clientId").references("clients.id");
       table.foreign("hostId").references("clients.id");
+
+      table.timestamp("created_at").defaultTo(knex.fn.now());
+      table.timestamp("updated_at").defaultTo(knex.fn.now());
     });
 };
 

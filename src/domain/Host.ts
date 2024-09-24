@@ -24,8 +24,9 @@ export class Host extends AggregateRoot {
   readonly id: Id;
   upcomingBookings: Array<Booking>;
   readonly forwardBooking: ForwardBooking;
-  readonly workHours: Array<WorkPeriod>;
-  readonly workDays: Array<Weekday>;
+  workHours: Array<WorkPeriod>;
+  workDays: Array<Weekday>;
+  isDeleted: boolean = false;
 
   private constructor(
     id: Id,
@@ -40,6 +41,18 @@ export class Host extends AggregateRoot {
     this.forwardBooking = forwardBooking;
     this.workHours = workHours;
     this.workDays = workDays;
+  }
+
+  public setWorkHours(workHours: Array<WorkPeriod>) {
+    this.workHours = workHours;
+  }
+
+  public setWorkDays(workDays: Array<Weekday>) {
+    this.workDays = workDays;
+  }
+
+  public setIsDeleted(flag: boolean) {
+    this.isDeleted = flag;
   }
 
   static fromDTO(data: HostDTO): Host {
