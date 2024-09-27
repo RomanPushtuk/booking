@@ -11,6 +11,7 @@ import {
   JsonController,
 } from "routing-controllers";
 import moment from "moment";
+import { nanoid } from "nanoid";
 import { Roles } from "../enums/Roles";
 import { ClientService } from "../services/ClientService";
 import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
@@ -39,43 +40,45 @@ export class ClientController {
     return this._clientService.deleteClient(user.id.value);
   }
 
-  @Get("/bookins")
+  @Get("/me/bookings")
   @Authorized([Roles.CLIENT])
   async getBookings(
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
-    @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
-    @QueryParam("dateTo") dateTo: string = moment().toISOString(),
+    @QueryParam("dateFrom") dateFrom: string = moment().format("YYYY-MM-DD"),
+    @QueryParam("dateTo") dateTo: string,
     @QueryParam("timeFrom") timeFrom: string = "0:00",
     @QueryParam("timeTo") timeTo: string = "23:59",
     @CurrentUser({ required: true }) user: User,
   ): Promise<Array<BookingDTO>> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
-    const filters = new BookingFilters(
-      user.id.value,
-      undefined,
+    const filters = new BookingFilters({
+      clientId: user.id.value,
+      hostId: undefined,
       dateFrom,
       dateTo,
       timeFrom,
       timeTo,
-    );
+    });
     return this._clientService.getBookings(sorting, filters);
   }
 
-  @Post("/bookings")
+  @Post("/me/bookings")
   @Authorized([Roles.CLIENT])
   public async createBooking(
-    @Body() createBookingBody: any,
+    @Body() body: any,
     @CurrentUser({ required: true }) user: User,
   ): Promise<{ id: string }> {
-    const createBookingDTO = new CreateBookingDTO({
+    const createBookingDTO = new CreateBookingDTO(body);
+    const bookingDto = new BookingDTO({
+      id: nanoid(8),
       clientId: user.id.value,
-      ...createBookingBody,
+      ...createBookingDTO,
     });
-    return this._clientService.createBooking(createBookingDTO);
+    return this._clientService.createBooking(bookingDto);
   }
 
-  @Post("/bookins/:bookingId/cancel")
+  @Post("/me/bookins/:bookingId/cancel")
   @Authorized([Roles.CLIENT])
   async cancelBooking(
     @Param("bookingId") bookingId: string,

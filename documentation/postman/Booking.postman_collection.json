@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "6e7b278b-4849-47de-9e56-f16741e482a6",
+		"name": "Booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13203116"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register (host)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"romanpushtuk_host232399235@gmail.com\",\r\n    \"password\": \"host_TEST_234980209344455\",\r\n    \"role\": \"host\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register (client)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"romanpushtuk_client232399235@gmail.com\",\r\n    \"password\": \"client_TEST_234980209344455\",\r\n    \"role\": \"client\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login (client)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"romanpushtuk_client232399235@gmail.com\",\r\n    \"password\": \"client_TEST_234980209344455\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login (host)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"romanpushtuk_host232399235@gmail.com\",\r\n    \"password\": \"host_TEST_234980209344455\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hosts",
+			"item": [
+				{
+					"name": "getHosts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/hosts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHost",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/hosts/Y9oWsNNc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"Y9oWsNNc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IklqSjRsU0tUIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfaG9zdDIzMjM5OTIzNUBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjYyOGIwOWIzNWEzZTk2ZGUyNmI5NTc4OTA3ZmEzZWNiMGJmMzQ5MWEiLCJyb2xlIjoiaG9zdCIsImlhdCI6MTcyNzQ2NDUwMiwiZXhwIjoxNzI3NDg5NzAyfQ.BshQ7N62oGKlc-2Llkykr-bJuVepEw6-TAVWjagI0ro",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/hosts/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateMe",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IklqSjRsU0tUIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfaG9zdDIzMjM5OTIzNUBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjYyOGIwOWIzNWEzZTk2ZGUyNmI5NTc4OTA3ZmEzZWNiMGJmMzQ5MWEiLCJyb2xlIjoiaG9zdCIsImlhdCI6MTcyNzQ2NDUwMiwiZXhwIjoxNzI3NDg5NzAyfQ.BshQ7N62oGKlc-2Llkykr-bJuVepEw6-TAVWjagI0ro",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workHours\": [{ \"from\": \"10:00\", \"to\": \"13:00\" }],\r\n    \"workDays\": [\"monday\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/hosts/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteMe",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IklqSjRsU0tUIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfaG9zdDIzMjM5OTIzNUBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjYyOGIwOWIzNWEzZTk2ZGUyNmI5NTc4OTA3ZmEzZWNiMGJmMzQ5MWEiLCJyb2xlIjoiaG9zdCIsImlhdCI6MTcyNzQ2NDUwMiwiZXhwIjoxNzI3NDg5NzAyfQ.BshQ7N62oGKlc-2Llkykr-bJuVepEw6-TAVWjagI0ro",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/hosts/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getMyBookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IklqSjRsU0tUIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfaG9zdDIzMjM5OTIzNUBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjYyOGIwOWIzNWEzZTk2ZGUyNmI5NTc4OTA3ZmEzZWNiMGJmMzQ5MWEiLCJyb2xlIjoiaG9zdCIsImlhdCI6MTcyNzQ2NDUwMiwiZXhwIjoxNzI3NDg5NzAyfQ.BshQ7N62oGKlc-2Llkykr-bJuVepEw6-TAVWjagI0ro",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/hosts/me/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"me",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHostBookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/hosts/Y9oWsNNc/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hosts",
+								"Y9oWsNNc",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ii1ueVZrYnlmIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfY2xpZW50MjMyMzk5MjM1QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiZjgzOTM2NjNiNTA2ZTJiNDg0ODdjMDM5NmQ2ZDk3M2YxMDZiMTNmMyIsInJvbGUiOiJjbGllbnQiLCJpYXQiOjE3Mjc0Njc4NzQsImV4cCI6MTcyNzQ5MzA3NH0.IhJUtVYxPTIErySChS1UTyTjyM-kNGzqJLapIvImeEw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/clients/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"clients",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteMe",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ii1ueVZrYnlmIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfY2xpZW50MjMyMzk5MjM1QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiZjgzOTM2NjNiNTA2ZTJiNDg0ODdjMDM5NmQ2ZDk3M2YxMDZiMTNmMyIsInJvbGUiOiJjbGllbnQiLCJpYXQiOjE3Mjc0Njc4NzQsImV4cCI6MTcyNzQ5MzA3NH0.IhJUtVYxPTIErySChS1UTyTjyM-kNGzqJLapIvImeEw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/clients/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"clients",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "myBookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ii1ueVZrYnlmIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfY2xpZW50MjMyMzk5MjM1QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiZjgzOTM2NjNiNTA2ZTJiNDg0ODdjMDM5NmQ2ZDk3M2YxMDZiMTNmMyIsInJvbGUiOiJjbGllbnQiLCJpYXQiOjE3Mjc0Njc4NzQsImV4cCI6MTcyNzQ5MzA3NH0.IhJUtVYxPTIErySChS1UTyTjyM-kNGzqJLapIvImeEw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/clients/me/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"clients",
+								"me",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createBooking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ii1ueVZrYnlmIiwiZW1haWwiOiJyb21hbnB1c2h0dWtfY2xpZW50MjMyMzk5MjM1QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiZjgzOTM2NjNiNTA2ZTJiNDg0ODdjMDM5NmQ2ZDk3M2YxMDZiMTNmMyIsInJvbGUiOiJjbGllbnQiLCJpYXQiOjE3Mjc0Njc4NzQsImV4cCI6MTcyNzQ5MzA3NH0.IhJUtVYxPTIErySChS1UTyTjyM-kNGzqJLapIvImeEw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hostId\": \"IjJ4lSKT\",\r\n    \"date\": \"2024-09-28\",\r\n    \"time\": { \"from\": \"10:00\", \"to\": \"11:00\" }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/clients/me/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"clients",
+								"me",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

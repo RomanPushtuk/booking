@@ -35,8 +35,8 @@ export class ClientService {
   }
 
   public async getBookings(
-    sorting: BookingSorting,
-    filters: BookingFilters,
+    sorting?: BookingSorting,
+    filters?: BookingFilters,
   ): Promise<Array<BookingDTO>> {
     const bookings = await this._unitOfWork.bookingRepository.getAll(
       sorting,
@@ -46,7 +46,7 @@ export class ClientService {
     return dtos;
   }
 
-  public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
+  public async createBooking(data: BookingDTO): Promise<{ id: string }> {
     return this._hostService.createBooking(data);
   }
 

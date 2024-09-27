@@ -1,9 +1,22 @@
 import { ClientRepository } from "../../src/repositories/ClientRepository";
 import { db } from "../../db";
+import { ClientDTO } from "../../src/dtos/ClientDTO";
+import { Client } from "../../src/domain/Client";
 
 describe("ClientRepository", () => {
-  test("Should okay work with SQLite DB", async () => {
+  test("clientRepository.getById", async () => {
+    const clientId = "aQKUaHTJ";
     const clientRepository = new ClientRepository(db);
-    await clientRepository.getById("aQKUaHTJ");
+    const client = await clientRepository.getById(clientId);
+    expect(client.id.value).toBe(clientId);
+  });
+
+  test("clientRepository.save", async () => {
+    const clientId = "aQKUaHTr";
+    const clientRepository = new ClientRepository(db);
+    const clientDto = new ClientDTO({ id: clientId });
+    const client = Client.fromDTO(clientDto);
+    const { id } = await clientRepository.save(client);
+    expect(id).toBe(clientId);
   });
 });

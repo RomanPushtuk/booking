@@ -18,6 +18,7 @@ interface IHostProperties {
   forwardBooking: string;
   workHours: Array<{ from: string; to: string }>;
   workDays: Array<string>;
+  deleted: boolean;
 }
 
 export class Host extends AggregateRoot {
@@ -26,7 +27,7 @@ export class Host extends AggregateRoot {
   readonly forwardBooking: ForwardBooking;
   workHours: Array<WorkPeriod>;
   workDays: Array<Weekday>;
-  isDeleted: boolean = false;
+  deleted: boolean = false;
 
   private constructor(
     id: Id,
@@ -52,7 +53,7 @@ export class Host extends AggregateRoot {
   }
 
   public setIsDeleted(flag: boolean) {
-    this.isDeleted = flag;
+    this.deleted = flag;
   }
 
   static fromDTO(data: HostDTO): Host {
@@ -77,6 +78,7 @@ export class Host extends AggregateRoot {
         to: to.value,
       })),
       workDays: this.workDays.map((item) => item.value),
+      deleted: this.deleted,
     };
   }
 
@@ -110,9 +112,6 @@ export class Host extends AggregateRoot {
   };
 
   private checkIfBookingInThePast = (booking: Booking): boolean => {
-    const now = moment();
-    const bookingDateTimePeriod = booking.getDateTimePeriod();
-    if (bookingDateTimePeriod.from.diff(now, "minutes") > 0) return true;
     return false;
   };
 

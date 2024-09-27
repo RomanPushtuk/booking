@@ -8,67 +8,64 @@ import moment from "moment";
 
 @Service()
 export class HostRepository {
-  constructor(
-    private _db: knex.Knex,
-    private _bookingRepository: BookingRepository
-  ) {}
+  private _bookingRepository: BookingRepository;
+
+  constructor(private _db: knex.Knex) {
+    this._bookingRepository = new BookingRepository(_db);
+  }
 
   public async getAll(): Promise<Host[]> {
     const hostsData = await this._db("hosts").select("*");
-    const dtos = hostsData.map((item) => {
-      const hostId = item.id;
-      const upcomingBookings = await this._bookingRepository.getAll();
-
-      return new HostDTO({
-        ...item,
-        workHours: JSON.parse(item.workHours),
-        workDays: JSON.parse(item.workDays),
-      });
+    const hostsPromises = hostsData.map(async (item) => {
+      return this.getById(item.id);
     });
-    const hosts = dtos.map((dto) => Host.fromDTO(dto));
+    const hosts = await Promise.all(hostsPromises);
     return hosts;
   }
 
   public async getById(id: string): Promise<Host> {
     const hostData = await this._db("hosts").where({ id }).first();
 
-    const bookingFilters = new BookingFilters({
-      hostId: id,
-      dateFrom: moment().toISOString(),
-    });
-
     const upcomingBookings = await this._bookingRepository.getAll(
       undefined,
-      bookingFilters,
+      new BookingFilters({
+        hostId: id,
+        dateFrom: moment().format("YYYY-MM-DD"),
+      }),
     );
 
     const createHostDTO = new HostDTO({
       ...hostData,
-      upcomingBookings,
       workHours: JSON.parse(hostData.workHours),
       workDays: JSON.parse(hostData.workDays),
     });
 
     const host = Host.fromDTO(createHostDTO);
+
+    host.setUpcomingBookings(upcomingBookings);
+
     return host;
   }
 
   public async save(host: Host): Promise<{ id: string }> {
-    const hostProperties = host.getProperties();
+    const { id, workHours, workDays, forwardBooking, deleted } =
+      host.getProperties();
 
     const upcomingBookings = host.getUpcomingBookings();
 
     await this._db("hosts")
       .insert({
-        ...hostProperties,
-        workHours: JSON.stringify(hostProperties.workHours),
-        workDays: JSON.stringify(hostProperties.workDays),
+        id,
+        forwardBooking,
+        workHours: JSON.stringify(workHours),
+        workDays: JSON.stringify(workDays),
+        isDeleted: deleted,
       })
       .onConflict("id")
       .merge();
 
     await this._bookingRepository.saveAll(upcomingBookings);
 
-    return { id: hostProperties.id };
+    return { id: host.id.value };
   }
 }

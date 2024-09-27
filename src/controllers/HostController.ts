@@ -30,9 +30,10 @@ export class HostController {
     return await this._hostService.getHosts();
   }
 
-  @Get("/:id")
-  async getHost(@Param("id") id: string): Promise<HostDTO> {
-    return await this._hostService.getHost(id);
+  @Get("/me")
+  @Authorized([Roles.HOST])
+  async getMe(@CurrentUser({ required: true }) user: User): Promise<HostDTO> {
+    return await this._hostService.getHost(user.id.value);
   }
 
   @Patch("/me")
@@ -53,6 +54,35 @@ export class HostController {
     return await this._hostService.deleteHost(user.id.value);
   }
 
+  @Get("/me/bookings")
+  @Authorized([Roles.HOST])
+  public async getMyBookings(
+    @CurrentUser({ required: true }) user: User,
+    @QueryParam("clientId") clientId?: string,
+    @QueryParam("sort-direction") sortDirection: string = "desc",
+    @QueryParam("sort-property") sortProperty: string = "date",
+    @QueryParam("dateFrom") dateFrom: string = moment().format("YYYY-MM-DD"),
+    @QueryParam("dateTo") dateTo?: string,
+    @QueryParam("timeFrom") timeFrom: string = "0:00",
+    @QueryParam("timeTo") timeTo: string = "23:59",
+  ): Promise<Array<BookingDTO>> {
+    const sorting = new BookingSorting(sortDirection, sortProperty);
+    const filters = new BookingFilters({
+      clientId,
+      hostId: user.id.value,
+      dateFrom,
+      dateTo,
+      timeFrom,
+      timeTo,
+    });
+    return this._hostService.getHostBookings(sorting, filters);
+  }
+
+  @Get("/:id")
+  async getHost(@Param("id") id: string): Promise<HostDTO> {
+    return await this._hostService.getHost(id);
+  }
+
   @Get("/:id/bookings")
   public async getHostBookings(
     @Param("id") hostId: string,
@@ -60,19 +90,19 @@ export class HostController {
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
     @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
-    @QueryParam("dateTo") dateTo: string = moment().toISOString(),
+    @QueryParam("dateTo") dateTo?: string,
     @QueryParam("timeFrom") timeFrom: string = "0:00",
     @QueryParam("timeTo") timeTo: string = "23:59",
   ): Promise<Array<BookingDTO>> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
-    const filters = new BookingFilters(
+    const filters = new BookingFilters({
       clientId,
       hostId,
       dateFrom,
       dateTo,
       timeFrom,
       timeTo,
-    );
+    });
     return this._hostService.getHostBookings(sorting, filters);
   }
 }

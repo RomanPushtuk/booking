@@ -3,7 +3,6 @@ import { nanoid } from "nanoid";
 import { Booking } from "../domain/Booking";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { Host } from "../domain/Host";
-import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
@@ -12,7 +11,6 @@ import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
 import { WorkPeriod } from "../application/WorkPeriod";
-import { HoursMinutes } from "../valueObjects/HoursMinutes";
 import { Weekday } from "../valueObjects/Weekday";
 
 @Service()
@@ -71,17 +69,23 @@ export class HostService {
       sorting,
       filters,
     );
-    return bookings.map((item) => new BookingDTO(item));
+
+    return bookings.map((item) => {
+      const bookingProperties = item.getProperties();
+      return new BookingDTO(bookingProperties);
+    });
   }
 
-  public async createBooking(data: CreateBookingDTO): Promise<{ id: string }> {
+  public async createBooking(data: BookingDTO): Promise<{ id: string }> {
     const host = await this._unitOfWork.hostRepository.getById(data.hostId);
-    const bookingDto = new BookingDTO({ id: nanoid(8), ...data });
-    const booking = Booking.fromDTO(bookingDto);
+    const booking = Booking.fromDTO(data);
     host.addBooking(booking);
-    await this._unitOfWork.hostRepository.save(host);
 
-    return { id: booking.id.value };
+    return this._unitOfWork.makeTransactional<Promise<{ id: string }>>(
+      async () => {
+        return await this._unitOfWork.hostRepository.save(host);
+      },
+    );
   }
 
   public async cancelBookingByClient(

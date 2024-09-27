@@ -1,7 +1,6 @@
 import * as yup from "yup";
 
 export const createBookingDTOSchema = yup.object().shape({
-  clientId: yup.string().required(),
   hostId: yup.string().required(),
   date: yup.string().required(),
   time: yup

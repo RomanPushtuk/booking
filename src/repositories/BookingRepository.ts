@@ -62,8 +62,6 @@ export class BookingRepository {
 
     const bookings = await queryBuilder;
 
-    console.log(bookings);
-
     const bookingDTOs = bookings.map(
       (booking) =>
         new BookingDTO({
@@ -74,20 +72,27 @@ export class BookingRepository {
     return bookingDTOs.map((booking) => Booking.fromDTO(booking));
   }
 
-  public async saveAll(bookings: Array<Booking>): Promise<string[]> {
-    const bookingProperties = bookings.map((booking) => {
-      const props = booking.getProperties();
-      return {
-        ...props,
-        time: JSON.stringify(props.time),
-      };
-    });
-    if (bookingProperties.length === 0) return [];
+  public async save(booking: Booking): Promise<{ id: string }> {
+    const { id, clientId, hostId, date, time, canceled, deleted } =
+      booking.getProperties();
+    const bookingDbModel = {
+      id,
+      clientId,
+      hostId,
+      date,
+      timeFrom: time.from,
+      timeTo: time.to,
+      isСanceled: canceled,
+      isDeleted: deleted,
+    };
 
-    await this._db("bookings")
-      .insert(bookingProperties)
-      .onConflict("id")
-      .merge();
-    return bookingProperties.map(({ id }) => id);
+    await this._db("bookings").insert(bookingDbModel).onConflict("id").merge();
+
+    return { id: booking.id.value };
+  }
+
+  public async saveAll(bookings: Array<Booking>): Promise<{ id: string }[]> {
+    const promises = bookings.map(this.save.bind(this));
+    return Promise.all(promises);
   }
 }

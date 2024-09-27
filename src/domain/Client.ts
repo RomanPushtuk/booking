@@ -3,23 +3,23 @@ import { Id } from "../valueObjects/Id";
 
 interface IClientProperties {
   id: string;
-  isDeleted: boolean;
+  deleted: boolean;
 }
 
 export class Client {
   readonly id: Id;
-  private _isDeleted: boolean = false;
+  private deleted: boolean = false;
 
   private constructor(id: Id) {
     this.id = id;
   }
 
   get isDeleted() {
-    return this._isDeleted;
+    return this.deleted;
   }
 
   public seIsDeleted(flag: boolean) {
-    this._isDeleted = flag;
+    this.deleted = flag;
   }
 
   static fromDTO(data: ClientDTO): Client {
@@ -30,7 +30,7 @@ export class Client {
   public getProperties(): IClientProperties {
     return {
       id: this.id.value,
-      isDeleted: this._isDeleted,
+      deleted: this.deleted,
     };
   }
 }

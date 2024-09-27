@@ -38,7 +38,6 @@ export class UnitOfWorkService {
   }
 
   get hostRepository(): HostRepository {
-    const bookingRepository = this.bookingRepository;
-    return new HostRepository(this.trx || db, bookingRepository);
+    return new HostRepository(this.trx || db);
   }
 }

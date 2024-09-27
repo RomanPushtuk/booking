@@ -12,6 +12,8 @@ interface IBookingProperties {
   hostId: string;
   date: string;
   time: { from: string; to: string };
+  canceled: boolean;
+  deleted: boolean;
 }
 
 export class Booking {
@@ -33,7 +35,7 @@ export class Booking {
     date: Date,
     time: WorkPeriod,
     canceled: boolean,
-    deleted: boolean,
+    deleted: boolean
   ) {
     this.id = id;
     this.clientId = clientId;
@@ -72,7 +74,7 @@ export class Booking {
     const date = new Date(data.date);
     const time = new WorkPeriod(
       new HoursMinutes(data.time.from),
-      new HoursMinutes(data.time.to),
+      new HoursMinutes(data.time.to)
     );
     const canceled = false;
     const deleted = false;
@@ -89,6 +91,8 @@ export class Booking {
       hostId: this.hostId.value,
       date: this.date.value,
       time: { from: time.from.value, to: time.to.value },
+      canceled: this.canceled,
+      deleted: this.deleted,
     };
   }
 
@@ -97,7 +101,7 @@ export class Booking {
     this.time = data.time
       ? new WorkPeriod(
           new HoursMinutes(data.time.from),
-          new HoursMinutes(data.time.to),
+          new HoursMinutes(data.time.to)
         )
       : this.time;
 
