@@ -12,6 +12,7 @@ import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
+import { Date } from "../valueObjects/Date";
 
 interface IHostProperties {
   id: string;
@@ -97,7 +98,12 @@ export class Host extends AggregateRoot {
     const { from: from1, to: to1 } = booking.getDateTimePeriod();
     for (const b of bookings) {
       const { from: from2, to: to2 } = b.getDateTimePeriod();
-      if (from1.isSameOrAfter(from2) && to1.isSameOrBefore(to2)) return true;
+
+      if (
+        (from2.isSameOrAfter(from1) && from2.isSameOrBefore(to1)) ||
+        (to2.isSameOrAfter(from1) && to2.isSameOrBefore(to1))
+      )
+        return true;
     }
     return false;
   };
@@ -112,6 +118,14 @@ export class Host extends AggregateRoot {
   };
 
   private checkIfBookingInThePast = (booking: Booking): boolean => {
+    const now = moment(global.Date.now());
+    const bookingDateTime = moment(
+      booking.date.value + " " + booking.time.from.value,
+      "YYYY-MM-DD hh:mm",
+    );
+
+    if (bookingDateTime.diff(now, "minutes") < 0) return true;
+
     return false;
   };
 

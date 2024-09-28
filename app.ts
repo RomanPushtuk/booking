@@ -2,9 +2,7 @@ import "reflect-metadata";
 import { createExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import * as knex from "knex";
 import moment from "moment";
-import { db } from "./db";
 
 import { FIVE_MINUTES } from "./src/constants/FIVE_MINUTES";
 import { NOW } from "./src/constants/NOW";
@@ -12,7 +10,6 @@ import { NOW } from "./src/constants/NOW";
 // its important to set container before any operation you do with routing-controllers,
 // including importing controllers
 useContainer(Container);
-Container.set<knex.Knex>("db", db);
 
 import { ClientController } from "./src/controllers/ClientController";
 import { HostController } from "./src/controllers/HostController";
@@ -35,7 +32,7 @@ const app = createExpressServer({
 
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password,
+      password
     );
 
     if (!user || !roles.length || !exp) return false;

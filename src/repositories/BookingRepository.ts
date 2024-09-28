@@ -11,7 +11,6 @@ export class BookingRepository {
 
   public async getById(id: string): Promise<Booking> {
     const data = await this._db("bookings").where("id", id).first();
-    console.log(data);
     const bookingDto = new BookingDTO({
       ...data,
       time: { from: data.timeFrom, to: data.timeTo },

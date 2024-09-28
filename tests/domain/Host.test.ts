@@ -7,7 +7,7 @@ import { BookingDTO } from "../../src/dtos/BookingDTO";
 
 jest.mock("moment", () => {
   return () =>
-    jest.requireActual("moment")("20.08.2024 22:10", "DD.MM.YYYY HH:mm");
+    jest.requireActual("moment")("20.08.2024 22:10", "YYYY-MM-DD HH:mm");
 });
 
 describe("Host", () => {

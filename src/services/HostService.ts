@@ -3,7 +3,6 @@ import { nanoid } from "nanoid";
 import { Booking } from "../domain/Booking";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
 import { Host } from "../domain/Host";
-import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
 import { UpdateHostDTO } from "../dtos/UpdateHostDTO";

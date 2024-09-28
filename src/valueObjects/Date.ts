@@ -10,14 +10,14 @@ export class Date {
   month: number;
   day: number;
 
-  // 03/12/2024
+  // 2024-12-03
   constructor(value: string) {
     this.value = value;
 
-    const m = moment(value, "DD-MM-YYYY");
+    const m = moment(value, "YYYY-MM-DD");
     this.year = m.year();
     this.month = m.month();
-    this.day = m.day();
+    this.day = m.date();
 
     try {
       Date.validate(this.value);
@@ -28,11 +28,11 @@ export class Date {
   }
 
   public static validate(value: string) {
-    const m = moment(value, "DD-MM-YYYY");
+    const m = moment(value, "YYYY-MM-DD");
 
     const year = m.year();
     const month = m.month();
-    const day = m.day();
+    const day = m.date();
 
     if (!year || !month || !day) throw new DateValidationError();
   }
@@ -42,8 +42,8 @@ export class Date {
     date2: Date,
     type: CompareType = "more",
   ): boolean | number {
-    const m1Date = moment(date1.value, "DD-MM-YYYY");
-    const m2Date = moment(date2.value, "DD-MM-YYYY");
+    const m1Date = moment(date1.value, "YYYY-MM-DD");
+    const m2Date = moment(date2.value, "YYYY-MM-DD");
 
     const diff = m2Date.diff(m1Date);
 
