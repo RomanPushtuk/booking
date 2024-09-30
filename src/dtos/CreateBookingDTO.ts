@@ -2,9 +2,9 @@ import { createBookingDTOSchema } from "../validationSchemas/createBookingDTOSch
 import { CreateBookingDTOValidationError } from "../errors/CreateBookingDTOValidationError";
 
 export class CreateBookingDTO {
-  hostId: string;
-  date: string;
-  time: { from: string; to: string };
+  readonly hostId: string;
+  readonly date: string;
+  readonly time: { from: string; to: string };
 
   constructor(data: any) {
     this.hostId = data.hostId;

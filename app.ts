@@ -1,11 +1,11 @@
 import "reflect-metadata";
-import { createExpressServer, useContainer, Action } from "routing-controllers";
+import express from "express";
+import { useExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import moment from "moment";
 
 import { FIVE_MINUTES } from "./src/constants/FIVE_MINUTES";
-import { NOW } from "./src/constants/NOW";
 
 // its important to set container before any operation you do with routing-controllers,
 // including importing controllers
@@ -16,8 +16,10 @@ import { HostController } from "./src/controllers/HostController";
 import { AuthController } from "./src/controllers/AuthController";
 import { UnitOfWorkService } from "./src/services/UnitOfWorkService";
 
+const app = express(); // your created express server
+
 // creates express app, registers all controller routes and returns you express app instance
-const app = createExpressServer({
+useExpressServer(app, {
   authorizationChecker: async (action: Action, roles: string[]) => {
     // here you can use request/response objects from action
     // also if decorator defines roles it needs to access the action
@@ -32,13 +34,13 @@ const app = createExpressServer({
 
     const user = await uow.userRepository.findByEmailAndPassword(
       email,
-      password
+      password,
     );
 
     if (!user || !roles.length || !exp) return false;
 
     const tokenExp = moment(exp * 1000); // because the jsonwebtoken sets the exp in seconds
-    const now = moment(NOW);
+    const now = moment();
 
     if (tokenExp.diff(now) < FIVE_MINUTES) {
       const userProperties = user.getProperties();

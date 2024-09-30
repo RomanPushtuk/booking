@@ -50,7 +50,7 @@ export class ClientController {
     @QueryParam("timeFrom") timeFrom: string = "0:00",
     @QueryParam("timeTo") timeTo: string = "23:59",
     @CurrentUser({ required: true }) user: User,
-  ): Promise<Array<BookingDTO>> {
+  ): Promise<BookingDTO[]> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
     const filters = new BookingFilters({
       clientId: user.id.value,

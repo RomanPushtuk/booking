@@ -12,7 +12,7 @@ import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
-import { Date } from "../valueObjects/Date";
+import { DeletingDeletedHost } from "../errors/DeletingDeletedHost";
 
 interface IHostProperties {
   id: string;
@@ -24,11 +24,11 @@ interface IHostProperties {
 
 export class Host extends AggregateRoot {
   readonly id: Id;
-  upcomingBookings: Array<Booking>;
-  readonly forwardBooking: ForwardBooking;
-  workHours: Array<WorkPeriod>;
-  workDays: Array<Weekday>;
-  deleted: boolean = false;
+  private _upcomingBookings: Array<Booking>;
+  private _forwardBooking: ForwardBooking;
+  private _workHours: Array<WorkPeriod>;
+  private _workDays: Array<Weekday>;
+  private _deleted: boolean = false;
 
   private constructor(
     id: Id,
@@ -39,22 +39,33 @@ export class Host extends AggregateRoot {
   ) {
     super();
     this.id = id;
-    this.upcomingBookings = upcomingBookings;
-    this.forwardBooking = forwardBooking;
-    this.workHours = workHours;
-    this.workDays = workDays;
+    this._upcomingBookings = upcomingBookings;
+    this._forwardBooking = forwardBooking;
+    this._workHours = workHours;
+    this._workDays = workDays;
   }
 
   public setWorkHours(workHours: Array<WorkPeriod>) {
-    this.workHours = workHours;
+    this._workHours = workHours;
   }
 
   public setWorkDays(workDays: Array<Weekday>) {
-    this.workDays = workDays;
+    this._workDays = workDays;
   }
 
   public setIsDeleted(flag: boolean) {
-    this.deleted = flag;
+    if (this._deleted === true) {
+      throw new DeletingDeletedHost();
+    }
+    this._deleted = flag;
+  }
+
+  public setUpcomingBookings(upcomingBookings: Booking[]) {
+    this._upcomingBookings = upcomingBookings;
+  }
+
+  public getUpcomingBookings(): Array<Booking> {
+    return this._upcomingBookings;
   }
 
   static fromDTO(data: HostDTO): Host {
@@ -73,22 +84,14 @@ export class Host extends AggregateRoot {
   public getProperties(): IHostProperties {
     return {
       id: this.id.value,
-      forwardBooking: this.forwardBooking.value,
-      workHours: this.workHours.map(({ from, to }) => ({
+      forwardBooking: this._forwardBooking.value,
+      workHours: this._workHours.map(({ from, to }) => ({
         from: from.value,
         to: to.value,
       })),
-      workDays: this.workDays.map((item) => item.value),
-      deleted: this.deleted,
+      workDays: this._workDays.map((item) => item.value),
+      deleted: this._deleted,
     };
-  }
-
-  setUpcomingBookings(upcomingBookings: Booking[]) {
-    this.upcomingBookings = upcomingBookings;
-  }
-
-  getUpcomingBookings(): Array<Booking> {
-    return this.upcomingBookings;
   }
 
   private checkIfExistOverlapingBooking = (
