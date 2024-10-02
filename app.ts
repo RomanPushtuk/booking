@@ -3,8 +3,8 @@ import express from "express";
 import { useExpressServer, useContainer, Action } from "routing-controllers";
 import { Container } from "typedi";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import moment from "moment";
 
+import { moment } from "./src/utils/moment";
 import { FIVE_MINUTES } from "./src/constants/FIVE_MINUTES";
 
 // its important to set container before any operation you do with routing-controllers,

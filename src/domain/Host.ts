@@ -12,7 +12,9 @@ import { AggregateRoot } from "./AggregateRoot";
 import { Booking } from "./Booking";
 import { UpdateBookingDTO } from "../dtos/UpdateBookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
-import { DeletingDeletedHost } from "../errors/DeletingDeletedHost";
+import { DeletingDeletedHostError } from "../errors/DeletingDeletedHostError";
+import { WorkHours } from "../application/WorkHours";
+import { WorkDays } from "../application/WorkDays";
 
 interface IHostProperties {
   id: string;
@@ -26,16 +28,16 @@ export class Host extends AggregateRoot {
   readonly id: Id;
   private _upcomingBookings: Array<Booking>;
   private _forwardBooking: ForwardBooking;
-  private _workHours: Array<WorkPeriod>;
-  private _workDays: Array<Weekday>;
+  private _workHours: WorkHours;
+  private _workDays: WorkDays;
   private _deleted: boolean = false;
 
   private constructor(
     id: Id,
     upcomingBookings: Array<Booking>,
     forwardBooking: ForwardBooking,
-    workHours: Array<WorkPeriod>,
-    workDays: Array<Weekday>,
+    workHours: WorkHours,
+    workDays: WorkDays,
   ) {
     super();
     this.id = id;
@@ -45,17 +47,17 @@ export class Host extends AggregateRoot {
     this._workDays = workDays;
   }
 
-  public setWorkHours(workHours: Array<WorkPeriod>) {
+  public setWorkHours(workHours: WorkHours) {
     this._workHours = workHours;
   }
 
-  public setWorkDays(workDays: Array<Weekday>) {
+  public setWorkDays(workDays: WorkDays) {
     this._workDays = workDays;
   }
 
   public setIsDeleted(flag: boolean) {
     if (this._deleted === true) {
-      throw new DeletingDeletedHost();
+      throw new DeletingDeletedHostError();
     }
     this._deleted = flag;
   }
@@ -72,24 +74,31 @@ export class Host extends AggregateRoot {
     const id = new Id(data.id);
     const upcomingBookings: Array<Booking> = [];
     const forwardBooking = new ForwardBooking(data.forwardBooking);
-    const workHours = data.workHours.map(
-      ({ from, to }) =>
-        new WorkPeriod(new HoursMinutes(from), new HoursMinutes(to)),
+    const workHours = new WorkHours(
+      data.workHours.map(
+        ({ from, to }) =>
+          new WorkPeriod(new HoursMinutes(from), new HoursMinutes(to)),
+      ),
     );
-    const workDays = data.workDays.map((item) => new Weekday(item));
+    const workDays = new WorkDays(
+      data.workDays.map((item) => new Weekday(item)),
+    );
 
     return new Host(id, upcomingBookings, forwardBooking, workHours, workDays);
   }
 
   public getProperties(): IHostProperties {
+    const workHours = this._workHours.getWorkHours();
+    const workDays = this._workDays.getWorkDays();
+
     return {
       id: this.id.value,
       forwardBooking: this._forwardBooking.value,
-      workHours: this._workHours.map(({ from, to }) => ({
+      workHours: workHours.map(({ from, to }) => ({
         from: from.value,
         to: to.value,
       })),
-      workDays: this._workDays.map((item) => item.value),
+      workDays: workDays.map((item) => item.value),
       deleted: this._deleted,
     };
   }
@@ -133,7 +142,7 @@ export class Host extends AggregateRoot {
   };
 
   private checkIfHostHasBooking = (booking: Booking): boolean => {
-    const findBooking = this.upcomingBookings.find(
+    const findBooking = this._upcomingBookings.find(
       (upcomingBooking) => upcomingBooking === booking,
     );
     if (findBooking) return true;
@@ -145,11 +154,11 @@ export class Host extends AggregateRoot {
       throw new Error("It is not possible to create a booking for a past date");
     }
 
-    if (this.checkIfExistOverlapingBooking(booking, this.upcomingBookings)) {
+    if (this.checkIfExistOverlapingBooking(booking, this._upcomingBookings)) {
       throw new Error("Host has booking on this date and time");
     }
 
-    this.upcomingBookings.push(booking);
+    this._upcomingBookings.push(booking);
     this.dispatch(new BookingCreatedEvent(booking.clientId.value));
   }
 
@@ -164,7 +173,7 @@ export class Host extends AggregateRoot {
       throw new Error("It is not possible to create a booking for a past date");
     }
 
-    if (this.checkIfExistOverlapingBooking(booking, this.upcomingBookings)) {
+    if (this.checkIfExistOverlapingBooking(booking, this._upcomingBookings)) {
       throw new Error("Host has booking on this date and time");
     }
 

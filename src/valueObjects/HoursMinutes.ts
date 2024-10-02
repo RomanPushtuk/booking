@@ -50,4 +50,8 @@ export class HoursMinutes {
     const [hoursStr, minutesStr] = time.split(":");
     return { hours: Number(hoursStr), minutes: Number(minutesStr) };
   }
+
+  public toMinutes(): number {
+    return this.hours * 60 + this.minutes;
+  }
 }

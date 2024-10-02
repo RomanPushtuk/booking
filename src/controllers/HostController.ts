@@ -86,7 +86,6 @@ export class HostController {
   @Get("/:id/bookings")
   public async getHostBookings(
     @Param("id") hostId: string,
-    @QueryParam("clientId") clientId?: string,
     @QueryParam("sort-direction") sortDirection: string = "desc",
     @QueryParam("sort-property") sortProperty: string = "date",
     @QueryParam("dateFrom") dateFrom: string = moment().toISOString(),
@@ -96,7 +95,7 @@ export class HostController {
   ): Promise<Array<BookingDTO>> {
     const sorting = new BookingSorting(sortDirection, sortProperty);
     const filters = new BookingFilters({
-      clientId,
+      clientId: undefined,
       hostId,
       dateFrom,
       dateTo,
