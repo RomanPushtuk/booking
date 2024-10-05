@@ -3,6 +3,7 @@ import { Body, JsonController, Post } from "routing-controllers";
 import { AuthService } from "../services/AuthService";
 import { CreateUserDTO } from "../dtos/CreateUserDTO";
 import { LoginUserDTO } from "../dtos/LoginUserDTO";
+import { Logger } from "../application/Logger";
 
 @JsonController("/auth")
 @Service()
@@ -18,6 +19,7 @@ export class AuthController {
   @Post("/login")
   async login(@Body() data: any): Promise<{ token: string }> {
     const loginUserDto = new LoginUserDTO(data);
+    Logger.get().info("logger works1");
     return await this._authService.login(loginUserDto);
   }
 }

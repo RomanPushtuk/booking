@@ -15,7 +15,8 @@ import { ClientController } from "./src/controllers/ClientController";
 import { HostController } from "./src/controllers/HostController";
 import { AuthController } from "./src/controllers/AuthController";
 import { UnitOfWorkService } from "./src/services/UnitOfWorkService";
-import { LoggingMiddleware } from "./src/middlewares/LoggingMiddleware";
+import { InitAsyncLocalStorageMiddleware } from "./src/middlewares/InitAsyncLocalStorageMiddleware";
+import { Logger } from "./src/application/Logger";
 
 const app = express(); // your created express server
 
@@ -53,6 +54,7 @@ useExpressServer(app, {
     }
 
     if (roles.includes(user.role.value)) {
+      Logger.get().setBindings({ role: user.role.value });
       return true;
     }
     return false;
@@ -69,12 +71,14 @@ useExpressServer(app, {
       email,
       password,
     );
-    if (user) {}
+    if (user) {
+      Logger.get().setBindings({ id: user.id.value });
+    }
     return user;
   },
   classTransformer: false,
   controllers: [ClientController, HostController, AuthController],
-  middlewares: [LoggingMiddleware],
+  middlewares: [InitAsyncLocalStorageMiddleware],
 });
 
 // run express application on port 3000

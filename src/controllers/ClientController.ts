@@ -21,6 +21,7 @@ import { ClientDTO } from "../dtos/ClientDTO";
 import { User } from "../domain/User";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
+import { Logger } from "../application/Logger";
 
 @JsonController("/clients")
 @Service()
@@ -30,6 +31,7 @@ export class ClientController {
   @Get("/me")
   @Authorized([Roles.CLIENT])
   async getMe(@CurrentUser({ required: true }) user: User): Promise<ClientDTO> {
+    Logger.get().info("logger works2");
     return this._clientService.getClient(user.id.value);
   }
 
