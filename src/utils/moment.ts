@@ -1,6 +1,5 @@
-import * as Moment from "moment";
-import { extendMoment } from "moment-range";
+import moment from "moment";
+import * as MR from "moment-range";
 
-const moment = extendMoment(Moment);
 
-export { moment };
+export { moment, MR };

@@ -57,14 +57,14 @@ describe("ClientController", () => {
     const timeTo: string = "23:59";
 
     const sorting = new BookingSorting(sortDirection, sortProperty);
-    const filters = new BookingFilters(
-      mockCurrentUser.id.value,
-      undefined,
-      dateFrom,
-      dateTo,
-      timeFrom,
-      timeTo,
-    );
+    const filters = new BookingFilters({
+      clientId: mockCurrentUser.id.value,
+      hostId: undefined,
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      timeFrom: timeFrom,
+      timeTo: timeTo,
+    });
 
     await clientController.getBookings(
       sortDirection,

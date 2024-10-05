@@ -7,16 +7,14 @@ import { Host } from "../../src/domain/Host";
 describe("HostRepository", () => {
   test("hostRepository.getById", async () => {
     const hostId = "Y9oWsNNc";
-    const bookingRepository = new BookingRepository(db);
-    const hostRepository = new HostRepository(db, bookingRepository);
+    const hostRepository = new HostRepository(db);
 
     const host = await hostRepository.getById(hostId);
     expect(host.id.value).toBe(hostId);
   });
 
   test("hostRepository.getAll", async () => {
-    const bookingRepository = new BookingRepository(db);
-    const hostRepository = new HostRepository(db, bookingRepository);
+    const hostRepository = new HostRepository(db);
 
     const hosts = await hostRepository.getAll();
     console.log(hosts);
@@ -26,8 +24,7 @@ describe("HostRepository", () => {
   test("hostRepository.save", async () => {
     const hostId = "Y9oWsNN8";
     const { id } = await db.transaction(async (trx) => {
-      const bookingRepository = new BookingRepository(trx);
-      const hostRepository = new HostRepository(trx, bookingRepository);
+      const hostRepository = new HostRepository(trx);
 
       const hostDto = new HostDTO({
         id: hostId,

@@ -15,9 +15,13 @@ import { ClientController } from "./src/controllers/ClientController";
 import { HostController } from "./src/controllers/HostController";
 import { AuthController } from "./src/controllers/AuthController";
 import { UnitOfWorkService } from "./src/services/UnitOfWorkService";
+import { LoggingMiddleware } from "./src/middlewares/LoggingMiddleware";
 
 const app = express(); // your created express server
 
+app.use((req, res, next) => {
+  next();
+});
 // creates express app, registers all controller routes and returns you express app instance
 useExpressServer(app, {
   authorizationChecker: async (action: Action, roles: string[]) => {
@@ -48,7 +52,9 @@ useExpressServer(app, {
       action.response.set("new-token", token);
     }
 
-    if (roles.includes(user.role.value)) return true;
+    if (roles.includes(user.role.value)) {
+      return true;
+    }
     return false;
   },
   currentUserChecker: async (action: Action) => {
@@ -63,10 +69,12 @@ useExpressServer(app, {
       email,
       password,
     );
+    if (user) {}
     return user;
   },
   classTransformer: false,
   controllers: [ClientController, HostController, AuthController],
+  middlewares: [LoggingMiddleware],
 });
 
 // run express application on port 3000

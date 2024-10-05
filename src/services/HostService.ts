@@ -11,6 +11,8 @@ import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
 import { WorkPeriod } from "../application/WorkPeriod";
 import { Weekday } from "../valueObjects/Weekday";
+import { WorkHours } from "../application/WorkHours";
+import { WorkDays } from "../application/WorkDays";
 
 @Service()
 export class HostService {
@@ -34,14 +36,16 @@ export class HostService {
     const { workHours, workDays } = updateHostDTO;
 
     if (workHours) {
-      const newWorkHours = workHours.map(({ from, to }) =>
-        WorkPeriod.fromFlat(from, to),
+      const newWorkHours = new WorkHours(
+        workHours.map(({ from, to }) => WorkPeriod.fromFlat(from, to)),
       );
       host.setWorkHours(newWorkHours);
     }
 
     if (workDays) {
-      const newWorkDays = workDays.map((item) => new Weekday(item));
+      const newWorkDays = new WorkDays(
+        workDays.map((item) => new Weekday(item)),
+      );
       host.setWorkDays(newWorkDays);
     }
 

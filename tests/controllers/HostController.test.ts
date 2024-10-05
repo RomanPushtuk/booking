@@ -68,7 +68,7 @@ describe("HostController", () => {
 
   test("The call of the getBookings method must be passed to the hostService.getBookings", async () => {
     const hostService = { getBookings: jest.fn() } as unknown as HostService;
-    const authController = new HostController(hostService);
+    const hostController = new HostController(hostService);
     const clientId = "9kd33c35";
     const hostId = "1dii3fk3";
 
@@ -79,7 +79,7 @@ describe("HostController", () => {
     const timeFrom: string = "0:00";
     const timeTo: string = "23:59";
 
-    await authController.getBookings(
+    await hostController.getHostBookings(
       hostId,
       clientId,
       sortDirection,
@@ -87,18 +87,17 @@ describe("HostController", () => {
       dateFrom,
       dateTo,
       timeFrom,
-      timeTo,
     );
 
     const sorting = new BookingSorting(sortDirection, sortProperty);
-    const filters = new BookingFilters(
+    const filters = new BookingFilters({
       clientId,
       hostId,
       dateFrom,
       dateTo,
       timeFrom,
       timeTo,
-    );
-    expect(hostService.getBookings).toHaveBeenCalledWith(sorting, filters);
+    });
+    expect(hostService.getHostBookings).toHaveBeenCalledWith(sorting, filters);
   });
 });

@@ -4,6 +4,7 @@ import { HostService } from "../../src/services/HostService";
 import { UnitOfWorkService } from "../../src/services/UnitOfWorkService";
 import { UpdateHostDTO } from "../../src/dtos/UpdateHostDTO";
 import { CreateBookingDTO } from "../../src/dtos/CreateBookingDTO";
+import { BookingDTO } from "../../src/dtos/BookingDTO";
 
 jest.mock("nanoid", () => {
   return () => "8vwwm4n2";
@@ -55,7 +56,13 @@ describe("HostService", () => {
       time: { from: "20:00", to: "21:00" },
     });
 
-    await hostService.createBooking(createBookingDTO);
+    const bookingDto = new BookingDTO({
+      id: "2fok03m4",
+      clientId: "23f0vk34",
+      ...createBookingDTO,
+    });
+
+    await hostService.createBooking(bookingDto);
   });
 
   test("hostService.cancelBookingByClient", async () => {});
