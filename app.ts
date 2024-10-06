@@ -20,9 +20,6 @@ import { Logger } from "./src/application/Logger";
 
 const app = express(); // your created express server
 
-app.use((req, res, next) => {
-  next();
-});
 // creates express app, registers all controller routes and returns you express app instance
 useExpressServer(app, {
   authorizationChecker: async (action: Action, roles: string[]) => {

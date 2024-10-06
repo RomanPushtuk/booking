@@ -1,0 +1,46 @@
+version: '3'
+services:
+  elasticsearch:
+    image: elasticsearch:8.15.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false  # Отключение встроенной безопасности (можно включить по мере необходимости)
+    ports:
+      - "9200:9200"  # Порт для взаимодействия с Elasticsearch
+      - "9300:9300"  # Порт для внутреннего взаимодействия между нодами (если понадобится кластер)
+    volumes:
+      - es-data:/usr/share/elasticsearch/data  # Пример подключения тома для хранения данных
+
+  kibana:
+    image: kibana:8.9.0
+    container_name: kibana
+    ports:
+      - "5601:5601"  # Порт для доступа к интерфейсу Kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200  # Указываем URL для подключения к Elasticsearch
+    depends_on:
+      - elasticsearch  # Указываем зависимость от Elasticsearch
+
+  ignite:
+    image: apacheignite/ignite:2.16.0
+    container_name: ignite
+    environment:
+      IGNITE_QUIET: "false"  # Включение логов для лучшего понимания работы сервиса
+      IGNITE_NO_ASCII: "true"  # Отключение ASCII-арт в логах
+    ports:
+      - "10800:10800"  # Клиентский порт Ignite (Thin clients)
+      - "47100:47100"  # Порт для серверной связи Ignite
+      - "47500:47500"  # Порт для связи с другими нодами
+      - "49112:49112"  # Порт для взаимодействия с клиентами
+    command: > # Отключение советов по производительности
+      /opt/ignite/apache-ignite/bin/ignite.sh
+      -J-DIGNITE_PERFORMANCE_SUGGESTIONS_DISABLED=true
+    volumes:
+      - ignite-data:/data  # Подключение тома для хранения данных Ignite
+
+volumes:
+  es-data:
+    driver: local
+  ignite-data:
+    driver: local
