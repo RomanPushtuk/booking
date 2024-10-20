@@ -1,20 +1,39 @@
 import { Service } from "typedi";
-import * as knex from "knex";
 import { Booking } from "../domain/Booking";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
+import { ODBC } from "../../ignite";
+import { getBookingById } from "../sql/getBookingById";
+import { getAllBookings } from "../sql/getAllBookings";
+import { saveBooking } from "../sql/saveBooking";
+
+interface BookingModel {
+  id: string;
+  clientId: string;
+  hostId: string;
+  date: string;
+  timeFrom: string;
+  timeTo: string;
+}
 
 @Service()
 export class BookingRepository {
-  constructor(private _db: knex.Knex) {}
-
   public async getById(id: string): Promise<Booking> {
-    const data = await this._db("bookings").where("id", id).first();
+    const connection = ODBC.getConnection();
+    const { sql, parameters } = getBookingById({ id });
+
+    const data = (await connection.query<BookingModel>(sql, parameters))[0];
+
+    if (!data) throw new Error("no results");
+
+    ODBC.returnConnection(connection);
+
     const bookingDto = new BookingDTO({
       ...data,
       time: { from: data.timeFrom, to: data.timeTo },
     });
+
     const booking = Booking.fromDTO(bookingDto);
     return booking;
   }
@@ -23,45 +42,15 @@ export class BookingRepository {
     sorting?: BookingSorting,
     filters?: BookingFilters,
   ): Promise<Array<Booking>> {
-    const queryBuilder = this._db("bookings");
+    const connection = ODBC.getConnection();
 
-    if (sorting) {
-      queryBuilder.orderBy(sorting.property, sorting.direction.value);
-    }
+    const { sql, parameters } = getAllBookings({ sorting, filters });
 
-    if (filters) {
-      if (filters.clientId) {
-        queryBuilder.where("clientId", filters.clientId.value);
-      }
+    const data = await connection.query<BookingModel>(sql, parameters);
 
-      if (filters.hostId) {
-        queryBuilder.where("hostId", filters.hostId.value);
-      }
+    ODBC.returnConnection(connection);
 
-      if (filters.dateFrom) {
-        queryBuilder.whereRaw(
-          `date(date) >= '${filters.dateFrom.format("YYYY-MM-DD")}'`,
-        );
-      }
-
-      if (filters.dateTo) {
-        queryBuilder.whereRaw(
-          `date(date) <= '${filters.dateTo.format("YYYY-MM-DD")}'`,
-        );
-      }
-
-      if (filters.timeFrom) {
-        queryBuilder.whereRaw(`time(timeFrom) >= '${filters.timeFrom.value}'`);
-      }
-
-      if (filters.timeTo) {
-        queryBuilder.whereRaw(`time(timeTo) <= '${filters.timeTo.value}'`);
-      }
-    }
-
-    const bookings = await queryBuilder;
-
-    const bookingDTOs = bookings.map(
+    const bookingDTOs = data.map(
       (booking) =>
         new BookingDTO({
           ...booking,
@@ -72,6 +61,8 @@ export class BookingRepository {
   }
 
   public async save(booking: Booking): Promise<{ id: string }> {
+    const connection = ODBC.getConnection();
+
     const { id, clientId, hostId, date, time, canceled, deleted } =
       booking.getProperties();
     const bookingDbModel = {
@@ -85,7 +76,11 @@ export class BookingRepository {
       isDeleted: deleted,
     };
 
-    await this._db("bookings").insert(bookingDbModel).onConflict("id").merge();
+    const { sql, parameters } = saveBooking(bookingDbModel);
+
+    await connection.query(sql, parameters);
+
+    ODBC.returnConnection(connection);
 
     return { id: booking.id.value };
   }

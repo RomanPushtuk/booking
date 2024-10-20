@@ -1,6 +1,7 @@
-import * as knex from "knex";
 import { Service } from "typedi";
-import { db } from "../../db";
+import odbc from "odbc";
+
+import { ODBC } from "../../ignite";
 import { UserRepository } from "../repositories/UserRepository";
 import { ClientRepository } from "../repositories/ClientRepository";
 import { HostRepository } from "../repositories/HostRepository";
@@ -8,36 +9,39 @@ import { BookingRepository } from "../repositories/BookingRepository";
 
 @Service()
 export class UnitOfWorkService {
-  private trx: knex.Knex.Transaction<any, any[]> | null;
+  private _trx: odbc.Connection | null = null;
+  private _db: odbc.Connection;
 
   constructor() {
-    this.trx = null;
+    this._db = ODBC.getConnection();
   }
 
-  public makeTransactional<T>(cb: () => T): Promise<T> {
-    return new Promise((resolve) => {
-      db.transaction(async (trx) => {
-        this.trx = trx;
-        const res = await cb();
-        resolve(res);
-        this.trx = null;
-      });
-    });
+  async makeTransactional<T>(
+    cb: (trx: odbc.Connection) => Promise<T>,
+  ): Promise<T> {
+    this._trx = ODBC.getConnection();
+    await this._trx.beginTransaction();
+    const result = await cb(this._trx);
+    await this._trx.commit();
+    await this._trx.close();
+    ODBC.returnConnection(this._trx);
+    this._trx = null;
+    return result;
   }
 
   get userRepository(): UserRepository {
-    return new UserRepository(this.trx || db);
+    return new UserRepository(this._trx || this._db);
   }
 
   get clientRepository(): ClientRepository {
-    return new ClientRepository(this.trx || db);
+    return new ClientRepository(this._trx || this._db);
   }
 
   get bookingRepository(): BookingRepository {
-    return new BookingRepository(this.trx || db);
+    return new BookingRepository(this._trx || this._db);
   }
 
   get hostRepository(): HostRepository {
-    return new HostRepository(this.trx || db);
+    return new HostRepository(this._trx || this._db);
   }
 }

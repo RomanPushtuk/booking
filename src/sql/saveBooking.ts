@@ -1,6 +1,3 @@
-import { Knex } from "knex";
-import { db } from "../../db";
-
 interface BookingDbModel {
   id: string;
   clientId: string;
@@ -12,11 +9,37 @@ interface BookingDbModel {
   isDeleted: boolean;
 }
 
-export const saveBooking = (bookingModel: BookingDbModel): Knex.SqlNative => {
-  return db("bookings")
-    .insert(bookingModel)
-    .onConflict("id")
-    .merge()
-    .toSQL()
-    .toNative();
+export const saveBooking = (bookingModel: BookingDbModel): string => {
+  const {
+    id,
+    clientId,
+    hostId,
+    date,
+    timeFrom,
+    timeTo,
+    isDeleted,
+    isСanceled,
+  } = bookingModel;
+  return `
+    insert into
+    \`bookings\` (
+      \`id\`,
+      \`clientId\`,
+      \`hostId\`,
+      \`date\`,
+      \`timeFrom\`,
+      \`timeTo\`,
+      \`isDeleted\`,
+      \`isСanceled\`
+    ) values (
+     '${id}', 
+     '${clientId}', 
+     '${hostId}', 
+     '${date}', 
+     '${timeFrom}', 
+     '${timeTo}', 
+     ${isDeleted},
+     ${isСanceled}
+    );
+  `;
 };

@@ -1,16 +1,16 @@
 import { Service } from "typedi";
-import * as knex from "knex";
 import { Host } from "../domain/Host";
 import { BookingRepository } from "./BookingRepository";
 import { HostDTO } from "../dtos/HostDTO";
 import { BookingFilters } from "../application/BookingFilters";
 import moment from "moment";
+import odbc from "odbc";
 
 @Service()
 export class HostRepository {
   private _bookingRepository: BookingRepository;
 
-  constructor(private _db: knex.Knex) {
+  constructor(private _db: odbc.Connection) {
     this._bookingRepository = new BookingRepository(_db);
   }
 

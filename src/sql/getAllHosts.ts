@@ -1,6 +1,3 @@
-import { Knex } from "knex";
-import { db } from "../../db";
-
-export const getAllHosts = (): Knex.SqlNative => {
-  return db("hosts").select("*").toSQL().toNative();
+export const getAllHosts = (): string => {
+  return `SELECT * from \`hosts\`;`;
 };

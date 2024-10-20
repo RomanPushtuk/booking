@@ -1,7 +1,4 @@
-import { Knex } from "knex";
-import { db } from "../../db";
-
-export const getHostById = (data: { id: string }): Knex.SqlNative => {
+export const getHostById = (data: { id: string }): string => {
   const { id } = data;
-  return db("hosts").where("id", id).toSQL().toNative();
+  return `SELECT * FROM \`hosts\` WHERE \`id\` = '${id}';`;
 };

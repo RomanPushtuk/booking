@@ -3,18 +3,13 @@ import { CreateClientDTO } from "../dtos/CreateClientDTO";
 import { Client } from "../domain/Client";
 import { HostService } from "./HostService";
 import { ClientDTO } from "../dtos/ClientDTO";
-import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
-import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
 
 @Service()
 export class ClientService {
-  constructor(
-    @Inject() private _hostService: HostService,
-    @Inject() private _unitOfWork: UnitOfWorkService,
-  ) {}
+  constructor(@Inject() private _hostService: HostService) {}
 
   public async getClient(id: string): Promise<ClientDTO> {
     const client = await this._unitOfWork.clientRepository.getById(id);

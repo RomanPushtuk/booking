@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import { nanoid } from "nanoid";
 import { Booking } from "../domain/Booking";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
@@ -6,7 +6,6 @@ import { Host } from "../domain/Host";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { HostDTO } from "../dtos/HostDTO";
 import { UpdateHostDTO } from "../dtos/UpdateHostDTO";
-import { UnitOfWorkService } from "./UnitOfWorkService";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
 import { WorkPeriod } from "../application/WorkPeriod";
@@ -16,7 +15,7 @@ import { WorkDays } from "../application/WorkDays";
 
 @Service()
 export class HostService {
-  constructor(@Inject() private _unitOfWork: UnitOfWorkService) {}
+  constructor() {}
 
   public async getHost(id: string): Promise<HostDTO> {
     const host = await this._unitOfWork.hostRepository.getById(id);
