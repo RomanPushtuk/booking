@@ -35,7 +35,7 @@ export class Booking {
     date: Date,
     time: WorkPeriod,
     canceled: boolean,
-    deleted: boolean
+    deleted: boolean,
   ) {
     this.id = id;
     this.clientId = clientId;
@@ -74,7 +74,7 @@ export class Booking {
     const date = new Date(data.date);
     const time = new WorkPeriod(
       new HoursMinutes(data.time.from),
-      new HoursMinutes(data.time.to)
+      new HoursMinutes(data.time.to),
     );
     const canceled = false;
     const deleted = false;
@@ -90,7 +90,10 @@ export class Booking {
       clientId: this.clientId.value,
       hostId: this.hostId.value,
       date: this.date.value,
-      time: { from: time.from.value, to: time.to.value },
+      time: {
+        from: time.from.getHoursMinutesWithSeconds(),
+        to: time.to.getHoursMinutesWithSeconds(),
+      },
       canceled: this.canceled,
       deleted: this.deleted,
     };
@@ -101,7 +104,7 @@ export class Booking {
     this.time = data.time
       ? new WorkPeriod(
           new HoursMinutes(data.time.from),
-          new HoursMinutes(data.time.to)
+          new HoursMinutes(data.time.to),
         )
       : this.time;
 

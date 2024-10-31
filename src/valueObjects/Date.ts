@@ -14,7 +14,7 @@ export class Date {
   constructor(value: string) {
     this.value = value;
 
-    const m = moment(value, "YYYY-MM-DD");
+    const m = moment(value, "YYYY-MM-DD", true);
     this.year = m.year();
     this.month = m.month();
     this.day = m.date();
@@ -29,12 +29,7 @@ export class Date {
 
   public static validate(value: string) {
     const m = moment(value, "YYYY-MM-DD");
-
-    const year = m.year();
-    const month = m.month();
-    const day = m.date();
-
-    if (!year || !month || !day) throw new DateValidationError();
+    if (!m.isValid()) throw new DateValidationError();
   }
 
   public static compare(
@@ -42,14 +37,15 @@ export class Date {
     date2: Date,
     type: CompareType = "more",
   ): boolean | number {
-    const m1Date = moment(date1.value, "YYYY-MM-DD");
-    const m2Date = moment(date2.value, "YYYY-MM-DD");
+    const m1Date = moment(date1.value, "YYYY-MM-DD", true);
+    const m2Date = moment(date2.value, "YYYY-MM-DD", true);
 
     const diff = m2Date.diff(m1Date);
 
     if (type === "more") return diff < 0;
     if (type === "less") return diff > 0;
     if (type === "equal") return date1.value === date2.value;
-    return false;
+
+    throw new Error("Unreal comparing");
   }
 }

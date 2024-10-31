@@ -43,7 +43,7 @@ export class AuthService {
       const hostDto = new HostDTO({
         id: user.id.value,
         workHours: [
-          { from: "9:00", to: "13:00" },
+          { from: "09:00", to: "13:00" },
           { from: "14:00", to: "18:00" },
         ],
         workDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],

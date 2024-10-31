@@ -5,5 +5,5 @@ interface ClientDbModel {
 
 export const saveClient = (clientModel: ClientDbModel): string => {
   const { id, isDeleted } = clientModel;
-  return `INSERT INTO \`clients\` (\`id\`, \`isDeleted\`) VALUES ('${id}', ${isDeleted});`;
+  return `MERGE INTO \`clients\` (\`id\`, \`isDeleted\`) VALUES ('${id}', ${isDeleted});`;
 };

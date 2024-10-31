@@ -3,10 +3,12 @@ import { Booking } from "../domain/Booking";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { BookingSorting } from "../application/BookingSorting";
 import { BookingFilters } from "../application/BookingFilters";
-import { ODBC } from "../../ignite";
+import { Ignite } from "../../ignite";
 import { getBookingById } from "../sql/getBookingById";
 import { getAllBookings } from "../sql/getAllBookings";
 import { saveBooking } from "../sql/saveBooking";
+import { Timestamp } from "../valueObjects/Timestamp";
+import moment from "moment";
 
 interface BookingModel {
   id: string;
@@ -20,14 +22,11 @@ interface BookingModel {
 @Service()
 export class BookingRepository {
   public async getById(id: string): Promise<Booking> {
-    const connection = ODBC.getConnection();
-    const { sql, parameters } = getBookingById({ id });
+    const sql = getBookingById({ id });
 
-    const data = (await connection.query<BookingModel>(sql, parameters))[0];
+    const data = (await Ignite.query(sql))[0];
 
     if (!data) throw new Error("no results");
-
-    ODBC.returnConnection(connection);
 
     const bookingDto = new BookingDTO({
       ...data,
@@ -40,47 +39,59 @@ export class BookingRepository {
 
   public async getAll(
     sorting?: BookingSorting,
-    filters?: BookingFilters,
+    filters?: BookingFilters
   ): Promise<Array<Booking>> {
-    const connection = ODBC.getConnection();
+    const sql = getAllBookings({ sorting, filters });
+    console.log("sql", sql);
+    const data: any[] = await Ignite.query(sql);
 
-    const { sql, parameters } = getAllBookings({ sorting, filters });
+    const bookingDTOs = data.map((booking) => {
+      const { ID, CLIENTID, HOSTID, DATETIMEFROM, DATETIMETO } = booking;
+      const [date, timeFrom] = moment(DATETIMEFROM)
+        .format("YYYY-MM-DD HH:mm")
+        .split(" ");
+      const [, timeTo] = moment(DATETIMETO)
+        .format("YYYY-MM-DD HH:mm")
+        .split(" ");
 
-    const data = await connection.query<BookingModel>(sql, parameters);
-
-    ODBC.returnConnection(connection);
-
-    const bookingDTOs = data.map(
-      (booking) =>
-        new BookingDTO({
-          ...booking,
-          time: { from: booking.timeFrom, to: booking.timeTo },
-        }),
-    );
+      return new BookingDTO({
+        id: ID,
+        clientId: CLIENTID,
+        hostId: HOSTID,
+        date: date,
+        time: { from: timeFrom, to: timeTo },
+      });
+    });
     return bookingDTOs.map((booking) => Booking.fromDTO(booking));
   }
 
   public async save(booking: Booking): Promise<{ id: string }> {
-    const connection = ODBC.getConnection();
-
-    const { id, clientId, hostId, date, time, canceled, deleted } =
-      booking.getProperties();
-    const bookingDbModel = {
+    const {
       id,
       clientId,
       hostId,
       date,
-      timeFrom: time.from,
-      timeTo: time.to,
+      time: { from: timeFrom, to: timeTo },
+      canceled,
+      deleted,
+    } = booking.getProperties();
+
+    const dateTimeFrom = new Timestamp(date + " " + timeFrom).value;
+    const dateTimeTo = new Timestamp(date + " " + timeTo).value;
+
+    const bookingDbModel = {
+      id,
+      clientId,
+      hostId,
+      dateTimeFrom,
+      dateTimeTo,
       isСanceled: canceled,
       isDeleted: deleted,
     };
 
-    const { sql, parameters } = saveBooking(bookingDbModel);
+    const sql = saveBooking(bookingDbModel);
 
-    await connection.query(sql, parameters);
-
-    ODBC.returnConnection(connection);
+    await Ignite.query(sql);
 
     return { id: booking.id.value };
   }

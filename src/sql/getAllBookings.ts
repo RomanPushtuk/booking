@@ -8,7 +8,7 @@ export const getAllBookings = (data: {
   const { sorting, filters } = data;
 
   let orderBySql = "";
-  let filtersSql = "";
+  let filtersSql: string[] = [];
 
   if (sorting) {
     orderBySql += `ORDER BY \`${sorting.property}\` ${sorting.direction.value}`;
@@ -16,29 +16,23 @@ export const getAllBookings = (data: {
 
   if (filters) {
     if (filters.clientId) {
-      filtersSql += `WHERE \`clientId\` = '${filters.clientId.value}'`;
+      filtersSql.push(`\`clientId\` = '${filters.clientId.value}'`);
     }
-
     if (filters.hostId) {
-      filtersSql += `AND WHERE \`hostId\` = '${filters.hostId.value}'`;
+      filtersSql.push(`\`hostId\` = '${filters.hostId.value}'`);
+    }
+    if (filters.dateTimeFrom) {
+      filtersSql.push(`\`dateTimeFrom\` >= '${filters.dateTimeFrom.value}'`);
+    }
+    if (filters.dateTimeTo) {
+      filtersSql.push(`\`dateTimeTo\` <=  '${filters.dateTimeTo.value}'`);
     }
 
-    if (filters.dateFrom) {
-      filtersSql += `AND WHERE date(\`date\`) >= '${filters.dateFrom.format("YYYY-MM-DD")}}'`;
-    }
-
-    if (filters.dateTo) {
-      filtersSql += `AND WHERE date(\`date\`) <=  '${filters.dateTo.format("YYYY-MM-DD")}}'`;
-    }
-
-    if (filters.timeFrom) {
-      filtersSql += `AND WHERE time(\`timeFrom\`) >= '${filters.timeFrom.value}}'`;
-    }
-
-    if (filters.timeTo) {
-      filtersSql += `AND WHERE time(\`timeTo\`)  <= '${filters.timeTo.value}}'`;
-    }
+    filtersSql = filtersSql.map((statement, index) => {
+      if (index === 0) return "where " + statement;
+      return "and " + statement;
+    });
   }
 
-  return `select * from \`bookings\` ${filtersSql} ${orderBySql};`;
+  return `select * from \`bookings\` ${filtersSql.join(" ")} ${orderBySql};`;
 };

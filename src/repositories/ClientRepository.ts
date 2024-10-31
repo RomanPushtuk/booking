@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { Client } from "../domain/Client";
 import { ClientDTO } from "../dtos/ClientDTO";
-import { ODBC } from "../../ignite";
+import { Ignite } from "../../ignite";
 import { getClientById } from "../sql/getClientById";
 import { saveClient } from "../sql/saveClient";
 
@@ -10,21 +10,19 @@ export class ClientRepository {
   constructor() {}
 
   async getById(id: string): Promise<Client> {
-    const connection = ODBC.getConnection();
-    const { sql, parameters } = getClientById({ id });
-    const data = (await connection.query(sql, parameters))[0];
-    ODBC.returnConnection(connection);
+    const sql = getClientById({ id });
+    const data: any = (await Ignite.query(sql))[0];
     if (!data) throw new Error("no results");
-    const clientDto = new ClientDTO(data);
+    const { ID } = data;
+    const clientDto = new ClientDTO({ id: ID });
     return Client.fromDTO(clientDto);
   }
 
   async save(client: Client): Promise<{ id: string }> {
-    const connection = ODBC.getConnection();
     const { id, deleted } = client.getProperties();
     const clientModel = { id, isDeleted: deleted };
-    const { sql, parameters } = saveClient(clientModel);
-    await connection.query(sql, parameters);
+    const sql = saveClient(clientModel);
+    await Ignite.query(sql);
     return { id: client.id.value };
   }
 }

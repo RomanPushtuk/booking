@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "booking host time service",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "alias": "tsc-alias -p tsconfig.json",
-    "start": "node ./build/app.js",
+    "start": "node --stack-size=1024 ./build/app.js",
     "test": "jest"
   },
   "author": "",
@@ -15,6 +14,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "booking": "file:",
     "continuation-local-storage": "^3.2.1",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",

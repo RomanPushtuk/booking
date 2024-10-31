@@ -1,41 +1,77 @@
-import odbc from "odbc";
+import {
+  IgniteClient,
+  CacheConfiguration,
+  SqlFieldsQuery,
+  IgniteClientConfiguration,
+  CacheClient,
+  SqlFieldsCursor,
+} from "apache-ignite-client";
+import { STATE } from "apache-ignite-client/dist/IgniteClient";
 
-const connectionString =
-  "Driver={Apache Ignite};Address=127.0.0.1:10800;Schema=PUBLIC;PageSize=1000;";
-const poolParams = {
-  connectionString, // The connection string to connect to the database
-  connectionTimeout: 30, // The number of seconds to wait for a request on the connection to complete before returning to the application
-  loginTimeout: 30, // The number of seconds to wait for a login request to complete before returning to the application
-  initialSize: 10, //  The initial number of Connections created in the Pool
-  incrementSize: 2, // How many additional Connections to create when all of the Pool's connections are taken
-  reuseConnections: true, // Whether or not to reuse an existing Connection instead of creating a new one
-  shrink: true, // Whether or not the number of Connections should shrink to `initialSize` as they free up
-};
+export class Ignite {
+  private static _client: IgniteClient | null = null;
+  private static _cache: CacheClient | null = null;
 
-export class ODBC {
-  private static _pool: odbc.Pool | null = null;
-  private static _connections: odbc.Connection[] = [];
+  public static async init() {
+    const igniteClient = new IgniteClient(Ignite.onStateChanged);
+    await igniteClient.connect(
+      new IgniteClientConfiguration("127.0.0.1:10800"),
+    );
+    Ignite._client = igniteClient;
 
-  public static async init(): Promise<void> {
-    ODBC._pool = await odbc.pool(poolParams);
+    const config = new CacheConfiguration();
+    config.setSqlSchema("PUBLIC");
 
-    for (let i = 0; i < 9; i++) {
-      const connection = await ODBC._pool.connect();
-      ODBC._connections.push(connection);
+    const cache = await igniteClient.getOrCreateCache("t_TEST", config);
+    Ignite._cache = cache;
+  }
+
+  public static async query(sql: string) {
+    if (Ignite._cache) {
+      const query = new SqlFieldsQuery(sql);
+      query.setIncludeFieldNames(true);
+
+      const cursor: SqlFieldsCursor = await Ignite._cache.query(query);
+      const fieldNames = cursor.getFieldNames();
+      const allRows = await cursor.getAll();
+
+      const result: { [key: string]: any }[] = [];
+
+      for (const row of allRows) {
+        const obj: { [key: string]: any } = {};
+
+        for (let i = 0; i < fieldNames.length; i++) {
+          const field = fieldNames[i];
+          const value = row[i] as any;
+          obj[field] = value;
+        }
+
+        result.push(obj);
+      }
+
+      return result;
     }
+
+    throw new Error("No Ignite._cache");
   }
 
-  public static getConnection(): odbc.Connection {
-    const connection = ODBC._connections.shift();
-    if (!connection) throw new Error("All connections was used");
-    return connection;
+  public static disconnect() {
+    if (Ignite._client) {
+      Ignite._client.disconnect();
+      return;
+    }
+
+    throw new Error("No Ignite._client");
   }
 
-  public static returnConnection(connection: odbc.Connection): void {
-    ODBC._connections.push(connection);
-  }
-
-  public static close() {
-    this._pool?.close();
+  private static onStateChanged(state: STATE, reason: string) {
+    if (state === IgniteClient.STATE.CONNECTED) {
+      console.log("ApacheIgnite client is started");
+    } else if (state === IgniteClient.STATE.DISCONNECTED) {
+      console.log("ApacheIgnite client is stopped");
+      if (reason) {
+        console.log(reason);
+      }
+    }
   }
 }

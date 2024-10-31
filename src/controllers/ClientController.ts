@@ -19,9 +19,8 @@ import { CreateBookingDTO } from "../dtos/CreateBookingDTO";
 import { BookingDTO } from "../dtos/BookingDTO";
 import { ClientDTO } from "../dtos/ClientDTO";
 import { User } from "../domain/User";
-import { BookingSorting } from "../application/BookingSorting";
-import { BookingFilters } from "../application/BookingFilters";
 import { Logger } from "../application/Logger";
+import { getBookingSortingsFilters } from "../utils/getBookingSortingsFilters";
 
 @JsonController("/clients")
 @Service()
@@ -47,22 +46,23 @@ export class ClientController {
   @Authorized([Roles.CLIENT])
   async getBookings(
     @QueryParam("sort-direction") sortDirection: string = "desc",
-    @QueryParam("sort-property") sortProperty: string = "date",
+    @QueryParam("sort-property") sortProperty: string = "dateTimeFrom",
     @QueryParam("dateFrom") dateFrom: string = moment().format("YYYY-MM-DD"),
     @QueryParam("dateTo") dateTo: string,
-    @QueryParam("timeFrom") timeFrom: string = "0:00",
-    @QueryParam("timeTo") timeTo: string = "23:59",
+    @QueryParam("timeFrom") timeFrom: string = moment().format("HH:mm"),
+    @QueryParam("timeTo") timeTo: string,
     @CurrentUser({ required: true }) user: User,
   ): Promise<BookingDTO[]> {
-    const sorting = new BookingSorting(sortDirection, sortProperty);
-    const filters = new BookingFilters({
-      clientId: user.id.value,
-      hostId: undefined,
+    const { sorting, filters } = getBookingSortingsFilters(
+      user.id.value,
+      undefined,
+      sortDirection,
+      sortProperty,
       dateFrom,
-      dateTo,
+      undefined,
       timeFrom,
-      timeTo,
-    });
+      undefined,
+    );
     return this._clientService.getBookings(sorting, filters);
   }
 

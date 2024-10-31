@@ -2,9 +2,8 @@ interface BookingDbModel {
   id: string;
   clientId: string;
   hostId: string;
-  date: string;
-  timeFrom: string;
-  timeTo: string;
+  dateTimeFrom: string;
+  dateTimeTo: string;
   isСanceled: boolean;
   isDeleted: boolean;
 }
@@ -14,30 +13,27 @@ export const saveBooking = (bookingModel: BookingDbModel): string => {
     id,
     clientId,
     hostId,
-    date,
-    timeFrom,
-    timeTo,
+    dateTimeFrom,
+    dateTimeTo,
     isDeleted,
     isСanceled,
   } = bookingModel;
   return `
-    insert into
-    \`bookings\` (
+    MERGE into
+      \`bookings\` (
       \`id\`,
       \`clientId\`,
       \`hostId\`,
-      \`date\`,
-      \`timeFrom\`,
-      \`timeTo\`,
+      \`dateTimeFrom\`,
+      \`dateTimeTo\`,
       \`isDeleted\`,
       \`isСanceled\`
     ) values (
      '${id}', 
      '${clientId}', 
      '${hostId}', 
-     '${date}', 
-     '${timeFrom}', 
-     '${timeTo}', 
+     '${dateTimeFrom}', 
+     '${dateTimeTo}', 
      ${isDeleted},
      ${isСanceled}
     );

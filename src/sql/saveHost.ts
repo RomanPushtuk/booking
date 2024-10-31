@@ -8,7 +8,7 @@ interface HostDbModel {
 
 export const saveHost = (clientModel: HostDbModel): string => {
   const { id, forwardBooking, workDays, workHours, isDeleted } = clientModel;
-  return `insert into \`hosts\` (
+  return `MERGE into \`hosts\` (
     \`id\`,
     \`forwardBooking\`,   
     \`workDays\`, 

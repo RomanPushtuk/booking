@@ -5,39 +5,49 @@ import { HostDTO } from "../dtos/HostDTO";
 import { BookingFilters } from "../application/BookingFilters";
 import moment from "moment";
 import odbc from "odbc";
+import { Ignite } from "../../ignite";
+import { getAllHosts } from "../sql/getAllHosts";
+import { getHostById } from "../sql/getHostById";
+import { saveHost } from "../sql/saveHost";
 
 @Service()
 export class HostRepository {
   private _bookingRepository: BookingRepository;
 
   constructor(private _db: odbc.Connection) {
-    this._bookingRepository = new BookingRepository(_db);
+    this._bookingRepository = new BookingRepository();
   }
 
   public async getAll(): Promise<Host[]> {
-    const hostsData = await this._db("hosts").select("*");
-    const hostsPromises = hostsData.map(async (item) => {
-      return this.getById(item.id);
+    const sql = getAllHosts();
+    const hostsData = await Ignite.query(sql);
+
+    const hostsPromises = hostsData.map(async (item: any) => {
+      return this.getById(item.ID);
     });
     const hosts = await Promise.all(hostsPromises);
     return hosts;
   }
 
   public async getById(id: string): Promise<Host> {
-    const hostData = await this._db("hosts").where({ id }).first();
+    const sql = getHostById({ id });
+    const hostData: any = (await Ignite.query(sql))[0];
+
+    const { ID, WORKHOURS, WORKDAYS, FORWARDBOOKING } = hostData;
 
     const upcomingBookings = await this._bookingRepository.getAll(
       undefined,
       new BookingFilters({
         hostId: id,
-        dateFrom: moment().format("YYYY-MM-DD"),
+        dateTimeFrom: moment().format("YYYY-MM-DD HH:mm:ss"),
       }),
     );
 
     const createHostDTO = new HostDTO({
-      ...hostData,
-      workHours: JSON.parse(hostData.workHours),
-      workDays: JSON.parse(hostData.workDays),
+      id: ID,
+      forwardBooking: FORWARDBOOKING,
+      workHours: JSON.parse(WORKHOURS),
+      workDays: JSON.parse(WORKDAYS),
     });
 
     const host = Host.fromDTO(createHostDTO);
@@ -52,17 +62,15 @@ export class HostRepository {
       host.getProperties();
 
     const upcomingBookings = host.getUpcomingBookings();
+    const sql = saveHost({
+      id,
+      forwardBooking,
+      workHours: JSON.stringify(workHours),
+      workDays: JSON.stringify(workDays),
+      isDeleted: deleted,
+    });
 
-    await this._db("hosts")
-      .insert({
-        id,
-        forwardBooking,
-        workHours: JSON.stringify(workHours),
-        workDays: JSON.stringify(workDays),
-        isDeleted: deleted,
-      })
-      .onConflict("id")
-      .merge();
+    await Ignite.query(sql);
 
     await this._bookingRepository.saveAll(upcomingBookings);
 

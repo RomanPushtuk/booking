@@ -12,7 +12,6 @@ export class UserDTO {
     this.email = data.email;
     this.password = data.password;
     this.role = data.role;
-
     try {
       userDtoSchema.validateSync(this);
     } catch (err) {

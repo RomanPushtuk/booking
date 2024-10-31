@@ -3,5 +3,5 @@ export const getUserByEmailAndPassword = (data: {
   password: string;
 }): string => {
   const { email, password } = data;
-  return `SELECT * \`users\` WHERE \`email\` = '${email}' AND \`password\` = '${password}';`;
+  return `select * from \`users\` where \`email\` = '${email}' and \`password\` = '${password}';`;
 };

@@ -1,3 +1,4 @@
+Error.stackTraceLimit = Infinity;
 import "reflect-metadata";
 import express from "express";
 import { useExpressServer, useContainer } from "routing-controllers";
@@ -14,10 +15,10 @@ import { InitAsyncLocalStorageMiddleware } from "./src/middlewares/InitAsyncLoca
 import { authorizationChecker } from "./src/auth/authorizationChecker";
 import { currentUserChecker } from "./src/auth/currentUserChecker";
 
-import { ODBC } from "./ignite";
+import { Ignite } from "./ignite";
 
 const bootstrap = async () => {
-  await ODBC.init();
+  await Ignite.init();
 
   const app = express(); // your created express server
 

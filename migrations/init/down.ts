@@ -1,20 +1,24 @@
-import { ODBC } from "../../ignite";
+import { Ignite } from "../../ignite";
 
 const up = async () => {
-  await ODBC.init();
-  const connection = ODBC.getConnection();
-  connection.query(`
+  await Ignite.init();
+  await Ignite.query(`
     drop table \`users\`;
+  `);
 
+  await Ignite.query(`
     drop table \`clients\`;
+  `);
 
+  await Ignite.query(`
     drop table \`hosts\`;
+  `);
 
+  await Ignite.query(`
     drop table \`bookings\`;
   `);
 
-  ODBC.returnConnection(connection);
-  ODBC.close();
+  Ignite.disconnect();
 };
 
 up();

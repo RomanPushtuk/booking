@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { nanoid } from "nanoid";
 import { Booking } from "../domain/Booking";
 import { CreateHostDTO } from "../dtos/CreateHostDTO";
@@ -12,18 +12,23 @@ import { WorkPeriod } from "../application/WorkPeriod";
 import { Weekday } from "../valueObjects/Weekday";
 import { WorkHours } from "../application/WorkHours";
 import { WorkDays } from "../application/WorkDays";
+import { HostRepository } from "../repositories/HostRepository";
+import { BookingRepository } from "../repositories/BookingRepository";
 
 @Service()
 export class HostService {
-  constructor() {}
+  constructor(
+    @Inject() private _hostRepository: HostRepository,
+    @Inject() private _bookingRepository: BookingRepository,
+  ) {}
 
   public async getHost(id: string): Promise<HostDTO> {
-    const host = await this._unitOfWork.hostRepository.getById(id);
+    const host = await this._hostRepository.getById(id);
     return new HostDTO(host.getProperties());
   }
 
   public async getHosts(): Promise<HostDTO[]> {
-    const hosts = await this._unitOfWork.hostRepository.getAll();
+    const hosts = await this._hostRepository.getAll();
     return hosts.map((host) => new HostDTO(host.getProperties()));
   }
 
@@ -31,7 +36,7 @@ export class HostService {
     id: string,
     updateHostDTO: UpdateHostDTO,
   ): Promise<{ id: string }> {
-    const host = await this._unitOfWork.hostRepository.getById(id);
+    const host = await this._hostRepository.getById(id);
     const { workHours, workDays } = updateHostDTO;
 
     if (workHours) {
@@ -48,29 +53,26 @@ export class HostService {
       host.setWorkDays(newWorkDays);
     }
 
-    return await this._unitOfWork.hostRepository.save(host);
+    return await this._hostRepository.save(host);
   }
 
   public async deleteHost(id: string): Promise<{ id: string }> {
-    const host = await this._unitOfWork.hostRepository.getById(id);
+    const host = await this._hostRepository.getById(id);
     host.setIsDeleted(true);
-    return await this._unitOfWork.hostRepository.save(host);
+    return await this._hostRepository.save(host);
   }
 
   public async createHost(data: CreateHostDTO): Promise<{ id: string }> {
     const hostDto = new HostDTO({ id: nanoid(8), ...data });
     const host = Host.fromDTO(hostDto);
-    return await this._unitOfWork.hostRepository.save(host);
+    return await this._hostRepository.save(host);
   }
 
   public async getHostBookings(
     sorting: BookingSorting,
     filters: BookingFilters,
   ): Promise<Array<BookingDTO>> {
-    const bookings = await this._unitOfWork.bookingRepository.getAll(
-      sorting,
-      filters,
-    );
+    const bookings = await this._bookingRepository.getAll(sorting, filters);
 
     return bookings.map((item) => {
       const bookingProperties = item.getProperties();
@@ -79,27 +81,21 @@ export class HostService {
   }
 
   public async createBooking(data: BookingDTO): Promise<{ id: string }> {
-    const host = await this._unitOfWork.hostRepository.getById(data.hostId);
+    const host = await this._hostRepository.getById(data.hostId);
     const booking = Booking.fromDTO(data);
     host.addBooking(booking);
 
-    return this._unitOfWork.makeTransactional<Promise<{ id: string }>>(
-      async () => {
-        return await this._unitOfWork.hostRepository.save(host);
-      },
-    );
+    return await this._hostRepository.save(host);
   }
 
   public async cancelBookingByClient(
     bookingId: string,
     clientId: string,
   ): Promise<{ id: string }> {
-    const booking = await this._unitOfWork.bookingRepository.getById(bookingId);
-    const host = await this._unitOfWork.hostRepository.getById(
-      booking.hostId.value,
-    );
+    const booking = await this._bookingRepository.getById(bookingId);
+    const host = await this._hostRepository.getById(booking.hostId.value);
     host.cancelBookingByClient(booking, clientId);
-    this._unitOfWork.hostRepository.save(host);
+    this._hostRepository.save(host);
     return { id: bookingId };
   }
 
@@ -107,12 +103,10 @@ export class HostService {
     bookingId: string,
     hostId: string,
   ): Promise<{ id: string }> {
-    const booking = await this._unitOfWork.bookingRepository.getById(bookingId);
-    const host = await this._unitOfWork.hostRepository.getById(
-      booking.hostId.value,
-    );
+    const booking = await this._bookingRepository.getById(bookingId);
+    const host = await this._hostRepository.getById(booking.hostId.value);
     host.cancelBookingByHost(booking, hostId);
-    this._unitOfWork.hostRepository.save(host);
+    this._hostRepository.save(host);
     return { id: bookingId };
   }
 }
